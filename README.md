@@ -1,7 +1,8 @@
 # ForceItemBattle
 
 Commands:
-- start <countdown_time> <jokers>
+- settings
+- start [countdown_time] [jokers]
 - skip <player_name>
 - reset
 - top
