@@ -1,0 +1,23 @@
+name: ForceItemBattleChallenge
+version: '${project.version}'
+main: de.janhck.forceitembattlechallenge.ForceItemBattleChallenge
+api-version: '1.20'
+commands:
+  start:
+    permission: battle.forceitem.command.start
+  settings:
+    permission: battle.forceitem.command.settings
+  skip:
+    permission: battle.forceitem.command.skip
+  reset:
+    permission: battle.forceitem.command.reset
+  pause:
+    permission: battle.forceitem.command.pause
+  invsee:
+    permission: battle.forceitem.command.invsee
+  top:
+  bp:
+  teleporter:
+    permission: battle.forceitem.command.teleporter
+  stoptimer:
+    permission: battle.forceitem.command.stoptimer
