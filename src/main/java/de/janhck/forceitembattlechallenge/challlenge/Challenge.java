@@ -37,6 +37,7 @@ public class Challenge {
             challengeParticipants.add(challengeParticipant);
         });
 
+        // Change the time in "world" to "day"
         Bukkit.getWorld("world").setTime(0);
     }
 
@@ -54,10 +55,20 @@ public class Challenge {
                 .findFirst();
     }
 
+    /**
+     * Returns all active challenge participants
+     * @return
+     *  List of challenge participants
+     */
     public List<ChallengeParticipant> getChallengeParticipants() {
         return challengeParticipants;
     }
 
+    /**
+     * Returns the timer for the challenge
+     * @return
+     *  Timer of the challenge
+     */
     public Timer getTimer() {
         return timer;
     }

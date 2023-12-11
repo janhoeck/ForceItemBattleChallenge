@@ -43,9 +43,11 @@ public class ChallengeManager {
             if(hasCurrentItemInInventory) {
                 Material currentItem = playerInstance.getCurrentItem();
                 playerInstance.nextItem();
+
+                player.sendMessage(ChatColor.GREEN + "✔ " + ChatColor.WHITE + currentItem);
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
 
-                ForceItemBattleChallenge.getInstance().logToFile(player.getName() + " got item: " + currentItem.toString() + " | new points: " + playerInstance.getScore());
+                ForceItemBattleChallenge.getInstance().logToFile(player.getName() + " got item: " + currentItem + " | new points: " + playerInstance.getScore());
             }
 
             // Inform the player if we reached the last 5 minutes
@@ -58,7 +60,14 @@ public class ChallengeManager {
             playerInstance.updateBossBar();
 
             // Updating action bar for the time and score
-            TextComponent textComponent = new TextComponent(ChatColor.GOLD.toString() + ChatColor.BOLD + TimeUtil.formatSeconds(timer.getRemainingTimeInSeconds()) + " | " + playerInstance.getScore());
+            TextComponent textComponent = new TextComponent(
+                    ChatColor.GOLD.toString() + ChatColor.BOLD
+                            + TimeUtil.formatSeconds(timer.getRemainingTimeInSeconds())
+                            + ChatColor.WHITE + ChatColor.BOLD
+                            + " | "
+                            + ChatColor.GOLD + ChatColor.BOLD
+                            + playerInstance.getScore()
+            );
             playerInstance.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, textComponent);
         });
     }

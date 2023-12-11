@@ -16,13 +16,19 @@ import java.util.List;
 
 public class ChallengeParticipant {
 
+    // The related player
     private final Player player;
+    // The displayed bossbar reference
     private BossBar bossBar;
+    // Contains all finished items
     private final List<Material> finishedItems;
+    // The current item the participant needs
     private Material currentItem = null;
-
+    // Reference to the itemsManager
     private final ItemsManager itemsManager;
+    // The difficulty level of the challenge
     private final ItemDifficultyLevel level;
+    // Last timestamp when the participant skipped an item
     private long lastSkipTimestampMillis = 0L;
 
     public ChallengeParticipant(Player player, ItemDifficultyLevel level, ItemsManager itemsManager) {
@@ -66,7 +72,7 @@ public class ChallengeParticipant {
         // Give firework rockets
         player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 128));
 
-        // Give shulker boxes
+        // Give shulker boxes in different colors
         player.getInventory().addItem(new ItemStack(Material.WHITE_SHULKER_BOX, 1));
         player.getInventory().addItem(new ItemStack(Material.GREEN_SHULKER_BOX, 1));
         player.getInventory().addItem(new ItemStack(Material.RED_SHULKER_BOX, 1));
@@ -120,7 +126,7 @@ public class ChallengeParticipant {
     public void updateBossBar() {
         if(currentItem != null) {
             if(bossBar == null) {
-                bossBar = Bukkit.createBossBar(currentItem.toString(), BarColor.GREEN, BarStyle.SOLID);
+                bossBar = Bukkit.createBossBar(currentItem.toString(), BarColor.WHITE, BarStyle.SOLID);
                 bossBar.addPlayer(player);
             }
 
