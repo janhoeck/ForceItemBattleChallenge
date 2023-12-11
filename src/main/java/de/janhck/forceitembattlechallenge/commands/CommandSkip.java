@@ -1,12 +1,15 @@
 package de.janhck.forceitembattlechallenge.commands;
 
 import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
+import de.janhck.forceitembattlechallenge.challlenge.ChallengeParticipant;
+import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Optional;
 
 public class CommandSkip implements CommandExecutor {
     @Override
@@ -15,26 +18,31 @@ public class CommandSkip implements CommandExecutor {
             return false;
         }
 
-        if (!ForceItemBattleChallenge.getTimer().isRunning()) {
-            sender.sendMessage(ChatColor.RED + "The game is not running. Start it first with /start");
+        ChallengeManager challengeManager = ForceItemBattleChallenge.getGamemanager();
+        if (!challengeManager.isRunning()) {
+            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "The Challenge wurde noch nicht gestartet. Starte diese erst mit /start.");
             return false;
-        } else if (args.length == 1) {
-            if (Bukkit.getPlayer(args[0]) != null) {
-                if (ForceItemBattleChallenge.getInstance().getConfig().getBoolean("settings.isTeamGame")) {
-                    /////////////////////////////////////// TEAMS ///////////////////////////////////////
-                    Bukkit.broadcastMessage(ChatColor.RED + args[0] + " skipped " + ForceItemBattleChallenge.getGamemanager().getMaterialTeamsFromPlayer(Bukkit.getPlayer(args[0])));
-                    ForceItemBattleChallenge.getInstance().logToFile("[" + ForceItemBattleChallenge.getTimer().getTime() + "] | " + args[0] + " skipped " + ForceItemBattleChallenge.getGamemanager().getMaterialTeamsFromPlayer(Bukkit.getPlayer(args[0])));
-                } else {
-                    Bukkit.broadcastMessage(ChatColor.RED + args[0] + " skipped " + ForceItemBattleChallenge.getGamemanager().getCurrentMaterial(Bukkit.getPlayer(args[0])));
-                    ForceItemBattleChallenge.getInstance().logToFile("[" + ForceItemBattleChallenge.getTimer().getTime() + "] | " + args[0] + " skipped " + ForceItemBattleChallenge.getGamemanager().getCurrentMaterial(Bukkit.getPlayer(args[0])));
-                }
-                ForceItemBattleChallenge.getGamemanager().skipItem(args[0]);
-            } else {
-                sender.sendMessage(ChatColor.RED + "This player is not online");
-            }
+        }
+
+        Player targetPlayer = Bukkit.getPlayer(args[0]);
+        if(targetPlayer == null) {
+            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Dieser Spieler scheint nicht online zu sein.");
+            return false;
+        }
+
+        Optional<ChallengeParticipant> optionalPlayerInstance = challengeManager.getChallenge().getChallengeParticipant(targetPlayer);
+        if(!optionalPlayerInstance.isPresent()) {
+            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Dieser Spieler nimmt nicht an der Challenge teil.");
+            return false;
+        }
+
+        ChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
+        if (args.length == 1) {
+            challengeParticipant.skipItem();
+            Bukkit.broadcastMessage(ForceItemBattleChallenge.PREFIX + targetPlayer.getName() + " hat " + challengeParticipant.getCurrentItem().toString() + " geskippt.");
             return true;
         } else {
-            sender.sendMessage(ChatColor.RED + "Usage: /skip <player_name>");
+            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Usage: /skip <player_name>");
             return false;
         }
     }

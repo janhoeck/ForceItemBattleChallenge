@@ -1,0 +1,155 @@
+package de.janhck.forceitembattlechallenge.challlenge;
+
+import de.janhck.forceitembattlechallenge.challlenge.items.ItemDifficultyLevel;
+import de.janhck.forceitembattlechallenge.challlenge.items.ItemsManager;
+import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ChallengeParticipant {
+
+    private final Player player;
+    private BossBar bossBar;
+    private final List<Material> finishedItems;
+    private Material currentItem = null;
+
+    private final ItemsManager itemsManager;
+    private final ItemDifficultyLevel level;
+    private long lastSkipTimestampMillis = 0L;
+
+    public ChallengeParticipant(Player player, ItemDifficultyLevel level, ItemsManager itemsManager) {
+        this.player = player;
+        this.finishedItems = new ArrayList<>();
+        this.itemsManager = itemsManager;
+        this.level = level;
+    }
+
+    /**
+     * Prepares the player for the challenge
+     * @param jokerAmount
+     *  The total amount of jokers
+     */
+    public void init(int jokerAmount) {
+        // Init the first item
+        nextItem();
+
+        // Common stuff
+        player.setHealth(20);
+        player.setSaturation(20);
+        player.getInventory().clear();
+        player.setLevel(0);
+        player.setExp(0);
+        player.teleport(Bukkit.getWorld("world").getSpawnLocation());
+        player.playSound(player, Sound.BLOCK_END_PORTAL_SPAWN, 1, 1);
+        player.setGameMode(GameMode.SURVIVAL);
+
+        // Create jokers
+        ItemStack jokerItemStack = new ItemStack(Material.NETHER_STAR, jokerAmount);
+        ItemMeta itemMeta = jokerItemStack.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.DARK_PURPLE + "JOKER");
+        jokerItemStack.setItemMeta(itemMeta);
+        player.getInventory().addItem(jokerItemStack);
+
+        // Give elytra
+        ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
+        elytraItemStack.addEnchantment(Enchantment.DURABILITY, 3);
+        player.getInventory().addItem(elytraItemStack);
+
+        // Give firework rockets
+        player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 128));
+
+        // Give shulker boxes
+        player.getInventory().addItem(new ItemStack(Material.WHITE_SHULKER_BOX, 1));
+        player.getInventory().addItem(new ItemStack(Material.GREEN_SHULKER_BOX, 1));
+        player.getInventory().addItem(new ItemStack(Material.RED_SHULKER_BOX, 1));
+    }
+
+    public void cleanUp() {
+        bossBar.removePlayer(player);
+        bossBar = null;
+    }
+
+    public boolean hasCurrentItemInInventory() {
+        return player.getInventory().contains(currentItem);
+    }
+
+    /**
+     * Next item for the participant.
+     * It saves the last item in the finishedItems array.
+     * The next item will always be unique and not used before.
+     */
+    public void nextItem() {
+        if(currentItem != null) {
+            finishedItems.add(currentItem);
+        }
+
+        Material item = Material.BARRIER;
+        while(item == Material.BARRIER) {
+            Material randomItem = itemsManager.getRandomItem(level);
+            boolean materialAlreadyUsed = finishedItems.stream().anyMatch((usedMaterial) -> usedMaterial == randomItem);
+            if(!materialAlreadyUsed) {
+                item = randomItem;
+            }
+        }
+        currentItem = item;
+    }
+
+    /**
+     * Gives the current item to the player. If the inventory is full, it drops it.
+     */
+    public void skipItem() {
+        lastSkipTimestampMillis = System.currentTimeMillis();
+
+        Material currentItem = getCurrentItem();
+        ItemStack itemStack = new ItemStack(currentItem);
+
+        player.getInventory().addItem(itemStack);
+        if(!player.getInventory().contains(currentItem)) {
+            player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+        }
+    }
+
+    public void updateBossBar() {
+        if(currentItem != null) {
+            if(bossBar == null) {
+                bossBar = Bukkit.createBossBar(currentItem.toString(), BarColor.GREEN, BarStyle.SOLID);
+                bossBar.addPlayer(player);
+            }
+
+            bossBar.setTitle(currentItem.toString());
+        }
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public List<Material> getFinishedItems() {
+        return finishedItems;
+    }
+
+    public Material getCurrentItem() {
+        return currentItem;
+    }
+
+    public int getScore() {
+        return finishedItems.size();
+    }
+
+    public boolean canSkip() {
+        if(lastSkipTimestampMillis == 0) {
+            return true;
+        }
+
+        long currentTimestampMillis = System.currentTimeMillis();
+        return currentTimestampMillis - lastSkipTimestampMillis >= 5000;
+    }
+}
