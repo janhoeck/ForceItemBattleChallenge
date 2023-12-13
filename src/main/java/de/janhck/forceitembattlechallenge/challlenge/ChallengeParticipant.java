@@ -17,7 +17,7 @@ import java.util.List;
 public class ChallengeParticipant {
 
     // The related player
-    private final Player player;
+    private Player player;
     // The displayed bossbar reference
     private BossBar bossBar;
     // Contains all finished items
@@ -28,22 +28,22 @@ public class ChallengeParticipant {
     private final ItemsManager itemsManager;
     // The difficulty level of the challenge
     private final ItemDifficultyLevel level;
+    private int remainingJokerAmount = 0;
     // Last timestamp when the participant skipped an item
     private long lastSkipTimestampMillis = 0L;
 
-    public ChallengeParticipant(Player player, ItemDifficultyLevel level, ItemsManager itemsManager) {
+    public ChallengeParticipant(Player player, ItemDifficultyLevel level, int jokerAmount, ItemsManager itemsManager) {
         this.player = player;
         this.finishedItems = new ArrayList<>();
-        this.itemsManager = itemsManager;
         this.level = level;
+        this.remainingJokerAmount = jokerAmount;
+        this.itemsManager = itemsManager;
     }
 
     /**
      * Prepares the player for the challenge
-     * @param jokerAmount
-     *  The total amount of jokers
      */
-    public void init(int jokerAmount) {
+    public void prepare() {
         // Init the first item
         nextItem();
 
@@ -57,12 +57,19 @@ public class ChallengeParticipant {
         player.playSound(player, Sound.BLOCK_END_PORTAL_SPAWN, 1, 1);
         player.setGameMode(GameMode.SURVIVAL);
 
-        // Create jokers
-        ItemStack jokerItemStack = new ItemStack(Material.NETHER_STAR, jokerAmount);
-        ItemMeta itemMeta = jokerItemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.DARK_PURPLE + "JOKER");
-        jokerItemStack.setItemMeta(itemMeta);
-        player.getInventory().addItem(jokerItemStack);
+        // Starter items
+        giveStarterItems();
+    }
+
+    public void giveStarterItems() {
+        if(remainingJokerAmount > 0) {
+            // Create jokers
+            ItemStack jokerItemStack = new ItemStack(Material.NETHER_STAR, remainingJokerAmount);
+            ItemMeta itemMeta = jokerItemStack.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.DARK_PURPLE + "JOKER");
+            jokerItemStack.setItemMeta(itemMeta);
+            player.getInventory().addItem(jokerItemStack);
+        }
 
         // Give elytra
         ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
@@ -138,6 +145,14 @@ public class ChallengeParticipant {
         return player;
     }
 
+    public void updatePlayer(Player player) {
+        this.player = player;
+
+        // If we update the player, we also need to reinitialize the boss bar
+        this.bossBar = null;
+        this.updateBossBar();
+    }
+
     public List<Material> getFinishedItems() {
         return finishedItems;
     }
@@ -148,6 +163,10 @@ public class ChallengeParticipant {
 
     public int getScore() {
         return finishedItems.size();
+    }
+
+    public void decreaseRemainingJokerAmount() {
+        remainingJokerAmount--;
     }
 
     public boolean canSkip() {

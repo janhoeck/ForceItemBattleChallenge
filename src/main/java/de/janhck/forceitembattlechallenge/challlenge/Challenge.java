@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Challenge {
 
@@ -31,8 +32,8 @@ public class Challenge {
 
     public void initChallenge(List<Player> players) {
         players.forEach(player -> {
-            ChallengeParticipant challengeParticipant = new ChallengeParticipant(player, level, itemsManager);
-            challengeParticipant.init(jokerAmount);
+            ChallengeParticipant challengeParticipant = new ChallengeParticipant(player, level, jokerAmount, itemsManager);
+            challengeParticipant.prepare();
 
             challengeParticipants.add(challengeParticipant);
         });
@@ -49,10 +50,18 @@ public class Challenge {
      *  The game instance of the player
      */
     public Optional<ChallengeParticipant> getChallengeParticipant(Player player) {
-        return this.challengeParticipants
+        return getChallengeParticipantByUUID(player.getUniqueId());
+    }
+
+    public Optional<ChallengeParticipant> getChallengeParticipantByUUID(UUID uuid) {
+        return challengeParticipants
                 .stream()
-                .filter(instance -> instance.getPlayer().getUniqueId().equals(player.getUniqueId()))
+                .filter(instance -> instance.getPlayer().getUniqueId().equals(uuid))
                 .findFirst();
+    }
+
+    public boolean isParticipant(Player player) {
+        return getChallengeParticipant(player).isPresent();
     }
 
     /**

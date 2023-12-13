@@ -1,11 +1,8 @@
 package de.janhck.forceitembattlechallenge;
 
-import de.janhck.forceitembattlechallenge.commands.CommandPause;
-import de.janhck.forceitembattlechallenge.commands.CommandSkip;
-import de.janhck.forceitembattlechallenge.commands.CommandStart;
-import de.janhck.forceitembattlechallenge.commands.CommandStopGame;
-import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
+import de.janhck.forceitembattlechallenge.commands.ChallengeCommand;
 import de.janhck.forceitembattlechallenge.listeners.Listeners;
+import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
@@ -36,10 +33,7 @@ public final class ForceItemBattleChallenge extends JavaPlugin {
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(new Listeners(), this);
 
-        getCommand("start").setExecutor(new CommandStart());
-        getCommand("stopGame").setExecutor(new CommandStopGame());
-        getCommand("skip").setExecutor(new CommandSkip());
-        getCommand("pause").setExecutor(new CommandPause());
+        getCommand("challenge").setExecutor(new ChallengeCommand());
     }
 
     @Override

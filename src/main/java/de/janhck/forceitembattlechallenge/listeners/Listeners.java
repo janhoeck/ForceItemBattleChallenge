@@ -2,11 +2,14 @@ package de.janhck.forceitembattlechallenge.listeners;
 
 import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
 import de.janhck.forceitembattlechallenge.challlenge.ChallengeParticipant;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
@@ -50,7 +53,35 @@ public class Listeners implements Listener {
             player.getInventory().setItem(player.getInventory().first(Material.NETHER_STAR), netherStarStack);
         }
 
+        challengeParticipant.decreaseRemainingJokerAmount();
         challengeParticipant.skipItem();
     }
 
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) { // triggered if the player dies
+        if (!ForceItemBattleChallenge.getGamemanager().isRunning()) {
+            return;
+        }
+
+        Player player = event.getEntity();
+        boolean isParticipant = ForceItemBattleChallenge.getGamemanager().getChallenge().isParticipant(player);
+        if(isParticipant) {
+            Location location = player.getLocation();
+            player.sendMessage(ForceItemBattleChallenge.PREFIX + "Du bist bei X:" + location.getBlockX() + " Y:" + location.getBlockY() + " Z:" + location.getBlockZ() + " gestorben.");
+        }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        if (!ForceItemBattleChallenge.getGamemanager().isRunning()) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        Optional<ChallengeParticipant> optionalPlayerInstance = ForceItemBattleChallenge.getGamemanager().getChallenge().getChallengeParticipantByUUID(player.getUniqueId());
+        if(optionalPlayerInstance.isPresent()) {
+            ChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
+            challengeParticipant.updatePlayer(player);
+        }
+    }
 }

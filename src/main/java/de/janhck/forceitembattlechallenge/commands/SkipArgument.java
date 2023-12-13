@@ -4,16 +4,14 @@ import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
 import de.janhck.forceitembattlechallenge.challlenge.ChallengeParticipant;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class CommandSkip implements CommandExecutor {
+public class SkipArgument implements ICommandArgument {
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             return false;
         }
@@ -42,7 +40,7 @@ public class CommandSkip implements CommandExecutor {
             Bukkit.broadcastMessage(ForceItemBattleChallenge.PREFIX + targetPlayer.getName() + " hat " + challengeParticipant.getCurrentItem().toString() + " geskippt.");
             return true;
         } else {
-            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Usage: /skip <player_name>");
+            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Usage: /challenge skip <player_name>");
             return false;
         }
     }

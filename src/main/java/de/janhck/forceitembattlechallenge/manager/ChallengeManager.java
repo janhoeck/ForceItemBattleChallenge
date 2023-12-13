@@ -37,6 +37,9 @@ public class ChallengeManager {
         boolean last5MinutesReached = timer.getRemainingTimeInSeconds() == (5 * 60);
         challenge.getChallengeParticipants().forEach((playerInstance) -> {
             Player player = playerInstance.getPlayer();
+            if(!player.isOnline()) {
+                return;
+            }
 
             // Check if the player got the current item in the inventory
             boolean hasCurrentItemInInventory = playerInstance.hasCurrentItemInInventory();

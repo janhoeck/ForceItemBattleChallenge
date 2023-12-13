@@ -3,8 +3,5 @@ version: '${project.version}'
 main: de.janhck.forceitembattlechallenge.ForceItemBattleChallenge
 api-version: '1.20'
 commands:
-  start:
-  skip:
-  stopGame:
-  pause:
+  challenge:
     permission: battle.forceitem.command.admin
