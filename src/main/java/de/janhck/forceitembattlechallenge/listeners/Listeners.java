@@ -7,9 +7,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
@@ -23,17 +25,21 @@ public class Listeners implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (player.getInventory().getItemInMainHand().getType() != Material.NETHER_STAR) {
-            return;
-        }
-
         Optional<ChallengeParticipant> optionalPlayerInstance = ForceItemBattleChallenge.getGamemanager().getChallenge().getChallengeParticipant(player);
         if(!optionalPlayerInstance.isPresent()) {
             return;
         }
 
+        if(event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+
+        if (player.getInventory().getItemInMainHand().getType() != Material.NETHER_STAR) {
+            return;
+        }
+
         ChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
-        if (!player.getTargetBlock(null, 5).isEmpty()) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR) {
             player.sendMessage(ForceItemBattleChallenge.PREFIX + "Du kannst den Joker nicht benutzen, während du einen Block ansiehst.");
             return;
         }
