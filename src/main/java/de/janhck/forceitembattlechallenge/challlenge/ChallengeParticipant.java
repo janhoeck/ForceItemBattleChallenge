@@ -80,7 +80,7 @@ public class ChallengeParticipant {
         player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 128));
 
         // Give shulker boxes in different colors
-        player.getInventory().addItem(new ItemStack(Material.WHITE_SHULKER_BOX, 1));
+        player.getInventory().addItem(new ItemStack(Material.LIME_SHULKER_BOX, 1));
         player.getInventory().addItem(new ItemStack(Material.GREEN_SHULKER_BOX, 1));
         player.getInventory().addItem(new ItemStack(Material.RED_SHULKER_BOX, 1));
     }
