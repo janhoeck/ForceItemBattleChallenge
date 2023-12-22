@@ -1,6 +1,6 @@
 name: ForceItemBattleChallenge
 version: '${project.version}'
-main: de.janhck.forceitembattlechallenge.ForceItemBattleChallenge
+main: de.janhck.forceitembattlechallenge.ChallengesPlugin
 api-version: '1.20'
 commands:
   challenge:

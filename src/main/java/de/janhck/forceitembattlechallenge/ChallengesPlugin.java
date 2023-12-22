@@ -1,7 +1,7 @@
 package de.janhck.forceitembattlechallenge;
 
 import de.janhck.forceitembattlechallenge.commands.ChallengeCommand;
-import de.janhck.forceitembattlechallenge.listeners.Listeners;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallengeListeners;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,9 +15,9 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public final class ForceItemBattleChallenge extends JavaPlugin {
+public final class ChallengesPlugin extends JavaPlugin {
 
-    private static ForceItemBattleChallenge instance;
+    private static ChallengesPlugin instance;
     private static ChallengeManager challengeManager;
     public static final String PREFIX = ChatColor.WHITE + "[" + ChatColor.GREEN + "ForceItemBattleChallenge" + ChatColor.WHITE + "]" + ChatColor.GOLD + " ";
 
@@ -28,18 +28,16 @@ public final class ForceItemBattleChallenge extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        challengeManager = new ChallengeManager(getConfig());
+        challengeManager = new ChallengeManager();
 
-        PluginManager manager = Bukkit.getPluginManager();
-        manager.registerEvents(new Listeners(), this);
-
+        // Register commands
         getCommand("challenge").setExecutor(new ChallengeCommand());
     }
 
     @Override
     public void onDisable() {
         if(challengeManager.isRunning()) {
-            challengeManager.endChallenge();
+            challengeManager.endCurrentChallenge();
         }
     }
 
@@ -71,11 +69,11 @@ public final class ForceItemBattleChallenge extends JavaPlugin {
         return sdf.format(cal.getTime());
     }
 
-    public static ForceItemBattleChallenge getInstance() {
+    public static ChallengesPlugin getInstance() {
         return instance;
     }
 
-    public static ChallengeManager getGamemanager() {
+    public static ChallengeManager getChallengeManager() {
         return challengeManager;
     }
 }

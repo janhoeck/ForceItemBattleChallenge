@@ -1,6 +1,6 @@
 package de.janhck.forceitembattlechallenge.commands;
 
-import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
+import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class ChallengeCommand implements CommandExecutor {
 
     private void sendCommandOverview(CommandSender sender) {
-        sender.sendMessage(ForceItemBattleChallenge.PREFIX);
+        sender.sendMessage(ChallengesPlugin.PREFIX);
         sender.sendMessage("/challenge start <time in min> <jokers>");
         sender.sendMessage("/challenge stop");
         sender.sendMessage("/challenge pause");

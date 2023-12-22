@@ -1,7 +1,7 @@
-package de.janhck.forceitembattlechallenge.listeners;
+package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
-import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
-import de.janhck.forceitembattlechallenge.challlenge.ChallengeParticipant;
+import de.janhck.forceitembattlechallenge.ChallengesPlugin;
+import de.janhck.forceitembattlechallenge.challenges.AbstractChallengeParticipant;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,16 +16,22 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
 
-public class Listeners implements Listener {
+public class ForceItemBattleChallengeListeners implements Listener {
+
+    private final ForceItemBattleChallenge challenge;
+
+    public ForceItemBattleChallengeListeners(ForceItemBattleChallenge challenge) {
+        this.challenge = challenge;
+    }
 
     @EventHandler
     public void onClick(PlayerInteractEvent event) { // triggered if a joker is used
-        if (!ForceItemBattleChallenge.getGamemanager().isRunning()) {
+        if (!ChallengesPlugin.getChallengeManager().isRunning()) {
             return;
         }
 
         Player player = event.getPlayer();
-        Optional<ChallengeParticipant> optionalPlayerInstance = ForceItemBattleChallenge.getGamemanager().getChallenge().getChallengeParticipant(player);
+        Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipant(player);
         if(!optionalPlayerInstance.isPresent()) {
             return;
         }
@@ -38,14 +44,14 @@ public class Listeners implements Listener {
             return;
         }
 
-        ChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
+        ForceItemBattleChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
         if (event.getAction() != Action.RIGHT_CLICK_AIR) {
-            player.sendMessage(ForceItemBattleChallenge.PREFIX + "Du kannst den Joker nicht benutzen, während du einen Block ansiehst.");
+            player.sendMessage(ChallengesPlugin.PREFIX + "Du kannst den Joker nicht benutzen, während du einen Block ansiehst.");
             return;
         }
 
         if(!challengeParticipant.canSkip()) {
-            player.sendMessage(ForceItemBattleChallenge.PREFIX + "Bitte warte 5 Sekunden, bevor du einen weiteren Joker verwenden kannst.");
+            player.sendMessage(ChallengesPlugin.PREFIX + "Bitte warte 5 Sekunden, bevor du einen weiteren Joker verwenden kannst.");
             return;
         }
 
@@ -65,28 +71,28 @@ public class Listeners implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) { // triggered if the player dies
-        if (!ForceItemBattleChallenge.getGamemanager().isRunning()) {
+        if (!ChallengesPlugin.getChallengeManager().isRunning()) {
             return;
         }
 
         Player player = event.getEntity();
-        boolean isParticipant = ForceItemBattleChallenge.getGamemanager().getChallenge().isParticipant(player);
+        boolean isParticipant = ChallengesPlugin.getChallengeManager().getCurrentChallenge().isParticipant(player);
         if(isParticipant) {
             Location location = player.getLocation();
-            player.sendMessage(ForceItemBattleChallenge.PREFIX + "Du bist bei X:" + location.getBlockX() + " Y:" + location.getBlockY() + " Z:" + location.getBlockZ() + " gestorben.");
+            player.sendMessage(ChallengesPlugin.PREFIX + "Du bist bei X:" + location.getBlockX() + " Y:" + location.getBlockY() + " Z:" + location.getBlockZ() + " gestorben.");
         }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!ForceItemBattleChallenge.getGamemanager().isRunning()) {
+        if (!ChallengesPlugin.getChallengeManager().isRunning()) {
             return;
         }
 
         Player player = event.getPlayer();
-        Optional<ChallengeParticipant> optionalPlayerInstance = ForceItemBattleChallenge.getGamemanager().getChallenge().getChallengeParticipantByUUID(player.getUniqueId());
+        Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipantByUUID(player.getUniqueId());
         if(optionalPlayerInstance.isPresent()) {
-            ChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
+            AbstractChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
             challengeParticipant.updatePlayer(player);
         }
     }

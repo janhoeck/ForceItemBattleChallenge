@@ -1,4 +1,4 @@
-package de.janhck.forceitembattlechallenge.challlenge.items;
+package de.janhck.forceitembattlechallenge.items;
 
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Material;

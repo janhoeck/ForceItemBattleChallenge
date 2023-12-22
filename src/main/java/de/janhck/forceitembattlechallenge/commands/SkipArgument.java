@@ -1,8 +1,11 @@
 package de.janhck.forceitembattlechallenge.commands;
 
-import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
-import de.janhck.forceitembattlechallenge.challlenge.ChallengeParticipant;
+import de.janhck.forceitembattlechallenge.ChallengesPlugin;
+import de.janhck.forceitembattlechallenge.challenges.AbstractChallenge;
+import de.janhck.forceitembattlechallenge.challenges.AbstractChallengeParticipant;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallengeParticipant;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
+import de.janhck.forceitembattlechallenge.manager.ChallengeType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,32 +19,38 @@ public class SkipArgument implements ICommandArgument {
             return false;
         }
 
-        ChallengeManager challengeManager = ForceItemBattleChallenge.getGamemanager();
+        if(args.length != 1) {
+            sender.sendMessage(ChallengesPlugin.PREFIX + "Usage: /challenge skip <player_name>");
+            return false;
+        }
+
+        ChallengeManager challengeManager = ChallengesPlugin.getChallengeManager();
         if (!challengeManager.isRunning()) {
-            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "The Challenge wurde noch nicht gestartet. Starte diese erst mit /start.");
+            sender.sendMessage(ChallengesPlugin.PREFIX + "The Challenge wurde noch nicht gestartet. Starte diese erst mit /start.");
             return false;
         }
 
         Player targetPlayer = Bukkit.getPlayer(args[0]);
         if(targetPlayer == null) {
-            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Dieser Spieler scheint nicht online zu sein.");
+            sender.sendMessage(ChallengesPlugin.PREFIX + "Dieser Spieler scheint nicht online zu sein.");
             return false;
         }
 
-        Optional<ChallengeParticipant> optionalPlayerInstance = challengeManager.getChallenge().getChallengeParticipant(targetPlayer);
-        if(!optionalPlayerInstance.isPresent()) {
-            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Dieser Spieler nimmt nicht an der Challenge teil.");
-            return false;
-        }
+        AbstractChallenge challenge = challengeManager.getCurrentChallenge();
+        if(challenge.getType() == ChallengeType.FORCE_ITEM_BATTLE) {
+            Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipant(targetPlayer);
+            if(!optionalPlayerInstance.isPresent()) {
+                sender.sendMessage(ChallengesPlugin.PREFIX + "Dieser Spieler nimmt nicht an der Challenge teil.");
+                return false;
+            }
 
-        ChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
-        if (args.length == 1) {
+            ForceItemBattleChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
             challengeParticipant.skipItem();
-            Bukkit.broadcastMessage(ForceItemBattleChallenge.PREFIX + targetPlayer.getName() + " hat " + challengeParticipant.getCurrentItem().toString() + " geskippt.");
+            Bukkit.broadcastMessage(ChallengesPlugin.PREFIX + targetPlayer.getName() + " hat " + challengeParticipant.getCurrentItem().toString() + " geskippt.");
             return true;
-        } else {
-            sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Usage: /challenge skip <player_name>");
-            return false;
         }
+
+        sender.sendMessage(ChallengesPlugin.PREFIX + "Usage: /challenge skip <player_name>");
+        return false;
     }
 }
