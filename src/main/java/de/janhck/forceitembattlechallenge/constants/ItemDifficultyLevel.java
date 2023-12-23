@@ -1,4 +1,4 @@
-package de.janhck.forceitembattlechallenge.items;
+package de.janhck.forceitembattlechallenge.constants;
 
 public enum ItemDifficultyLevel {
     EASY, MEDIUM, HARD;

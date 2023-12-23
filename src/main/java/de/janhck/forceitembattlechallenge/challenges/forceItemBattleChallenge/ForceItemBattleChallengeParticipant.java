@@ -1,8 +1,8 @@
 package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.challenges.AbstractChallengeParticipant;
-import de.janhck.forceitembattlechallenge.items.ItemDifficultyLevel;
-import de.janhck.forceitembattlechallenge.items.ItemsManager;
+import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
+import de.janhck.forceitembattlechallenge.manager.ItemsManager;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;

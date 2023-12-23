@@ -4,7 +4,7 @@ import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.AbstractChallenge;
 import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallengeParticipant;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
-import de.janhck.forceitembattlechallenge.manager.ChallengeType;
+import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

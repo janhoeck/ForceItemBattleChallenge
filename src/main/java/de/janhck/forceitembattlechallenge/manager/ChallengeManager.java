@@ -3,8 +3,10 @@ package de.janhck.forceitembattlechallenge.manager;
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.AbstractChallenge;
 import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallenge;
+import de.janhck.forceitembattlechallenge.constants.ChallengeType;
+import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.exceptions.MissingParametersException;
-import de.janhck.forceitembattlechallenge.items.ItemDifficultyLevel;
+import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -22,15 +24,17 @@ public class ChallengeManager {
         switch (challengeType) {
             case FORCE_ITEM_BATTLE: {
                 // Check if there are required parameters
-                if(!parameters.containsKey("timeInSeconds") || !parameters.containsKey("jokerAmount")) {
+                if(!parameters.containsKey(Keys.TIME_IN_SECONDS) || !parameters.containsKey(Keys.JOKER_AMOUNT)) {
                     throw new MissingParametersException();
                 }
 
-                int timeInSeconds = (int) parameters.get("timeInSeconds");
-                int jokerAmount = (int) parameters.get("jokerAmount");
+                int timeInSeconds = (int) parameters.get(Keys.TIME_IN_SECONDS);
+                int jokerAmount = (int) parameters.get(Keys.JOKER_AMOUNT);
+                ItemDifficultyLevel level = ItemDifficultyLevel.valueOf(config.getString(Keys.DIFFICULTY));
+                if(parameters.containsKey(Keys.DIFFICULTY)) {
+                    level = (ItemDifficultyLevel) parameters.get(Keys.DIFFICULTY);
+                }
 
-                // Get the difficulty level from the config
-                ItemDifficultyLevel level = ItemDifficultyLevel.valueOf(config.getString("difficulty"));
                 // Assign ForceItemBattleChallenge
                 currentChallenge = new ForceItemBattleChallenge(level, jokerAmount, timeInSeconds);
                 break;

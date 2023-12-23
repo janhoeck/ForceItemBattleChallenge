@@ -2,9 +2,9 @@ package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.AbstractChallenge;
-import de.janhck.forceitembattlechallenge.items.ItemDifficultyLevel;
-import de.janhck.forceitembattlechallenge.items.ItemsManager;
-import de.janhck.forceitembattlechallenge.manager.ChallengeType;
+import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
+import de.janhck.forceitembattlechallenge.manager.ItemsManager;
+import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.timer.Timer;
 import de.janhck.forceitembattlechallenge.utils.TimeUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -57,6 +57,8 @@ public class ForceItemBattleChallenge extends AbstractChallenge<ForceItemBattleC
         // register listeners
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(listener, ChallengesPlugin.getInstance());
+
+        Bukkit.broadcastMessage(ChallengesPlugin.PREFIX + "Die Challenge wurde mit " + jokerAmount + " Jokern gestartet. Schwierigkeit: " + level);
     }
 
     @Override

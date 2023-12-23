@@ -1,6 +1,6 @@
 package de.janhck.forceitembattlechallenge.challenges;
 
-import de.janhck.forceitembattlechallenge.manager.ChallengeType;
+import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.timer.Timer;
 import org.bukkit.entity.Player;
 

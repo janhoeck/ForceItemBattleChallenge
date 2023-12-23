@@ -1,16 +1,18 @@
-package de.janhck.forceitembattlechallenge.manager.ui.items.settings;
+package de.janhck.forceitembattlechallenge.gui.items.settings;
 
-import de.janhck.forceitembattlechallenge.items.ItemDifficultyLevel;
-import de.janhck.forceitembattlechallenge.manager.ui.inventories.AbstractInventory;
-import de.janhck.forceitembattlechallenge.manager.ui.items.AbstractInventoryItem;
+import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
+import de.janhck.forceitembattlechallenge.constants.Keys;
+import de.janhck.forceitembattlechallenge.gui.PagedInventoryItem;
+import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.stream.Stream;
 
-public class DifficultyLevelItem extends AbstractInventoryItem<DifficultyLevelItem> {
+public class DifficultyLevelItem extends PagedInventoryItem<ItemDifficultyLevel> {
 
     private ItemStack itemStack;
     private ItemDifficultyLevel level = ItemDifficultyLevel.EASY;
@@ -18,6 +20,20 @@ public class DifficultyLevelItem extends AbstractInventoryItem<DifficultyLevelIt
     public DifficultyLevelItem(int slot) {
         super(slot);
         this.itemStack = getItemStackByLevel(level);
+
+        addClickConsumer(new ClickAction<ItemDifficultyLevel>() {
+            @Override
+            public void handleClick(Handler<ItemDifficultyLevel> handler) {
+                InventoryClickEvent event = handler.getEvent();
+                if(event.isLeftClick()) {
+                    level = level.next();
+                    itemStack = getItemStackByLevel(level);
+                } else if(event.isRightClick()) {
+                    level = level.prev();
+                    itemStack = getItemStackByLevel(level);
+                }
+            }
+        });
     }
 
     private ItemStack getItemStackByLevel(ItemDifficultyLevel level) {
@@ -49,7 +65,7 @@ public class DifficultyLevelItem extends AbstractInventoryItem<DifficultyLevelIt
 
     @Override
     public String getKey() {
-        return "difficulty";
+        return Keys.DIFFICULTY;
     }
 
     @Override
@@ -58,28 +74,7 @@ public class DifficultyLevelItem extends AbstractInventoryItem<DifficultyLevelIt
     }
 
     @Override
-    public Runnable getLeftClickAction() {
-        return () -> {
-            level = level.next();
-            itemStack = getItemStackByLevel(level);
-        };
-    }
-
-    @Override
-    public Runnable getRightClickAction() {
-        return () -> {
-            level = level.prev();
-            itemStack = getItemStackByLevel(level);
-        };
-    }
-
-    @Override
-    public DifficultyLevelItem getResult() {
-        return null;
-    }
-
-    @Override
-    public AbstractInventory getNextInventory() {
-        return null;
+    public ItemDifficultyLevel getResult() {
+        return this.level;
     }
 }

@@ -1,11 +1,9 @@
 package de.janhck.forceitembattlechallenge.commands;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
-import de.janhck.forceitembattlechallenge.items.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
-import de.janhck.forceitembattlechallenge.manager.ChallengeType;
-import de.janhck.forceitembattlechallenge.manager.ui.inventories.challenges.ChallengesInventory;
-import org.bukkit.Bukkit;
+import de.janhck.forceitembattlechallenge.constants.ChallengeType;
+import de.janhck.forceitembattlechallenge.gui.inventories.ChallengesInventory;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -48,7 +46,6 @@ public class StartArgument implements ICommandArgument {
                     parameters.put("timeInSeconds", timeInSeconds);
 
                     challengeManager.startChallengeByType(ChallengeType.FORCE_ITEM_BATTLE, parameters);
-                    Bukkit.broadcastMessage(ChallengesPlugin.PREFIX + "Die Challenge wurde mit " + jokerAmount + " Jokern gestartet. Schwierigkeit: " + ItemDifficultyLevel.EASY);
                     return true;
                 } catch (NumberFormatException e) {
                     sender.sendMessage(ChallengesPlugin.PREFIX + "Usage: /challenge start <time in min> <jokers>");
