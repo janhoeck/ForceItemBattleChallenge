@@ -1,7 +1,7 @@
 package de.janhck.forceitembattlechallenge.commands;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
-import de.janhck.forceitembattlechallenge.challenges.AbstractChallenge;
+import de.janhck.forceitembattlechallenge.challenges.api.Challenge;
 import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallengeParticipant;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
@@ -23,7 +23,7 @@ public class SkipArgument implements ICommandArgument {
             return false;
         }
 
-        ChallengeManager challengeManager = ChallengesPlugin.getChallengeManager();
+        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
         if (!challengeManager.isRunning()) {
             sender.sendMessage(ChallengesPlugin.PREFIX + "The Challenge wurde noch nicht gestartet. Starte diese erst mit /start.");
             return false;
@@ -35,10 +35,10 @@ public class SkipArgument implements ICommandArgument {
             return false;
         }
 
-        AbstractChallenge challenge = challengeManager.getCurrentChallenge();
+        Challenge challenge = challengeManager.getCurrentChallenge();
         if(challenge.getType() == ChallengeType.FORCE_ITEM_BATTLE) {
             Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipant(targetPlayer);
-            if(!optionalPlayerInstance.isPresent()) {
+            if(optionalPlayerInstance.isEmpty()) {
                 sender.sendMessage(ChallengesPlugin.PREFIX + "Dieser Spieler nimmt nicht an der Challenge teil.");
                 return false;
             }

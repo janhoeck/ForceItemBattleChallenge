@@ -1,7 +1,6 @@
-package de.janhck.forceitembattlechallenge.challenges;
+package de.janhck.forceitembattlechallenge.challenges.api;
 
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
-import de.janhck.forceitembattlechallenge.timer.Timer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -9,13 +8,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class AbstractChallenge<P extends AbstractChallengeParticipant> {
+public abstract class Challenge<P extends ChallengeParticipant> {
 
     private final ChallengeType type;
     protected final List<P> challengeParticipants = new ArrayList<>();
-    protected Timer timer = null;
 
-    public AbstractChallenge(ChallengeType type) {
+    public Challenge(ChallengeType type) {
         this.type = type;
     }
 
@@ -30,8 +28,6 @@ public abstract class AbstractChallenge<P extends AbstractChallengeParticipant> 
      * Will be called, when the challenge ends.
      */
     public abstract void endChallenge();
-
-    public abstract void runEachSecond();
 
     /**
      * Find an active instance of a player.
@@ -62,21 +58,6 @@ public abstract class AbstractChallenge<P extends AbstractChallengeParticipant> 
      */
     public List<P> getChallengeParticipants() {
         return challengeParticipants;
-    }
-
-    /**
-     * Returns the timer for the challenge
-     * @return
-     *  Timer of the challenge
-     */
-    public Timer getTimer() {
-        return timer;
-    }
-
-    public Timer initializeTimer(int timeInSeconds, Runnable action, Runnable endAction) {
-        Timer timer = new Timer(timeInSeconds, action, endAction);
-        this.timer = timer;
-        return timer;
     }
 
     /**

@@ -1,4 +1,4 @@
-package de.janhck.forceitembattlechallenge.timer;
+package de.janhck.forceitembattlechallenge.challenges.api.timer;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -7,9 +7,9 @@ public class Timer extends BukkitRunnable {
 
     private boolean paused = false;
     // The total time in seconds
-    private int totalTimeInSeconds = 0;
+    private int totalTimeInSeconds;
     // The remaining time in seconds
-    private int remainingTimeInSeconds = 0;
+    private int remainingTimeInSeconds;
     private final Runnable action;
     private final Runnable endAction;
 

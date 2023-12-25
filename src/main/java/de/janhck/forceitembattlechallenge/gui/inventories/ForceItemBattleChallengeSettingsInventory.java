@@ -9,6 +9,7 @@ import de.janhck.forceitembattlechallenge.gui.items.common.StartChallengeItem;
 import de.janhck.forceitembattlechallenge.gui.items.settings.DifficultyLevelItem;
 import de.janhck.forceitembattlechallenge.gui.items.settings.JokerAmountItem;
 import de.janhck.forceitembattlechallenge.gui.items.settings.TimeSettingsItem;
+import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
@@ -54,7 +55,8 @@ public class ForceItemBattleChallengeSettingsInventory extends PagedInventory {
                 ChallengeType challengeType = (ChallengeType) getPreviousInventory().getResults().get("challengeType");
                 Map<String, Object> parameters = getResults();
 
-                ChallengesPlugin.getChallengeManager().startChallengeByType(challengeType, parameters);
+                ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
+                challengeManager.startChallengeByType(challengeType, parameters);
                 closeInventory(handler.getEvent().getWhoClicked());
             }
         });

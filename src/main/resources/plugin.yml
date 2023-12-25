@@ -3,5 +3,6 @@ version: '${project.version}'
 main: de.janhck.forceitembattlechallenge.ChallengesPlugin
 api-version: '1.20'
 commands:
+  c:
   challenge:
     permission: battle.forceitem.command.admin

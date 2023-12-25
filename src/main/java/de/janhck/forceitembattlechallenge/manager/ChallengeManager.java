@@ -1,11 +1,12 @@
 package de.janhck.forceitembattlechallenge.manager;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
-import de.janhck.forceitembattlechallenge.challenges.AbstractChallenge;
+import de.janhck.forceitembattlechallenge.challenges.api.Challenge;
+import de.janhck.forceitembattlechallenge.challenges.api.TimedChallenge;
 import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallenge;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.constants.Keys;
-import de.janhck.forceitembattlechallenge.exceptions.MissingParametersException;
+import de.janhck.forceitembattlechallenge.challenges.api.exceptions.MissingParametersException;
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class ChallengeManager {
 
     // Current running challenge
-    private AbstractChallenge<?> currentChallenge = null;
+    private Challenge<?> currentChallenge = null;
 
     public void startChallengeByType(ChallengeType challengeType, Map<String, Object> parameters) throws RuntimeException {
         FileConfiguration config = ChallengesPlugin.getInstance().getConfig();
@@ -44,6 +45,11 @@ public class ChallengeManager {
         }
 
         if(currentChallenge != null) {
+            if(currentChallenge instanceof TimedChallenge<?> timedChallenge) {
+                // Listen when the challenge ends. Set currentChallenge to null
+                timedChallenge.addChallengeEndsConsumer(() -> this.currentChallenge = null);
+            }
+
             // If a challenge was assigned, we can start the challenge
             currentChallenge.startChallenge(new ArrayList<>(Bukkit.getOnlinePlayers()));
         }
@@ -54,7 +60,6 @@ public class ChallengeManager {
             return;
         }
 
-        currentChallenge.getTimer().cancel();
         currentChallenge.endChallenge();
         currentChallenge = null;
     }
@@ -63,7 +68,7 @@ public class ChallengeManager {
         return currentChallenge != null;
     }
 
-    public AbstractChallenge<?> getCurrentChallenge() {
+    public Challenge<?> getCurrentChallenge() {
         return currentChallenge;
     }
 }

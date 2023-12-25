@@ -8,7 +8,7 @@ public class StopArgument implements ICommandArgument {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        ChallengeManager challengeManager = ChallengesPlugin.getChallengeManager();
+        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
         if(!challengeManager.isRunning()) {
             sender.sendMessage(ChallengesPlugin.PREFIX + "Es wurde noch keine Challenge gestartet.");
             return false;

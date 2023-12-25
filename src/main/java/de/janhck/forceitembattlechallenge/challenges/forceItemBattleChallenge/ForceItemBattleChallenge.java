@@ -1,11 +1,9 @@
 package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
-import de.janhck.forceitembattlechallenge.challenges.AbstractChallenge;
+import de.janhck.forceitembattlechallenge.challenges.api.TimedChallenge;
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
-import de.janhck.forceitembattlechallenge.manager.ItemsManager;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
-import de.janhck.forceitembattlechallenge.timer.Timer;
 import de.janhck.forceitembattlechallenge.utils.TimeUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -20,29 +18,25 @@ import org.bukkit.plugin.PluginManager;
 
 import java.util.List;
 
-public class ForceItemBattleChallenge extends AbstractChallenge<ForceItemBattleChallengeParticipant> {
+public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChallengeParticipant> {
 
-    private final ItemsManager itemsManager = new ItemsManager();
     // The current item difficulty for the challenge
     private final ItemDifficultyLevel level;
     // The initial amount of jokers
-    private int jokerAmount = 1;
-    private int timeInSeconds = 1;
+    private int jokerAmount;
     private final Listener listener = new ForceItemBattleChallengeListeners(this);
 
     public ForceItemBattleChallenge(ItemDifficultyLevel level, int jokerAmount, int timeInSeconds) {
-        super(ChallengeType.FORCE_ITEM_BATTLE);
+        super(ChallengeType.FORCE_ITEM_BATTLE, timeInSeconds);
 
         this.level = level;
         this.jokerAmount = jokerAmount;
-        this.timeInSeconds = timeInSeconds;
     }
 
     @Override
     public void startChallenge(List<Player> players) {
-        Timer timer = initializeTimer(timeInSeconds, this::runEachSecond, this::endChallenge);
         players.forEach(player -> {
-            ForceItemBattleChallengeParticipant challengeParticipant = new ForceItemBattleChallengeParticipant(player, level, jokerAmount, itemsManager);
+            ForceItemBattleChallengeParticipant challengeParticipant = new ForceItemBattleChallengeParticipant(player, level, jokerAmount);
             challengeParticipant.prepare();
 
             challengeParticipants.add(challengeParticipant);
@@ -51,14 +45,12 @@ public class ForceItemBattleChallenge extends AbstractChallenge<ForceItemBattleC
         // Change the time in "world" to "day"
         Bukkit.getWorld("world").setTime(0);
 
-        // Start the timer
-        timer.startTimer();
-
         // register listeners
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(listener, ChallengesPlugin.getInstance());
 
         Bukkit.broadcastMessage(ChallengesPlugin.PREFIX + "Die Challenge wurde mit " + jokerAmount + " Jokern gestartet. Schwierigkeit: " + level);
+        super.startChallenge(players);
     }
 
     @Override
@@ -73,15 +65,14 @@ public class ForceItemBattleChallenge extends AbstractChallenge<ForceItemBattleC
         });
         ChallengesPlugin.getInstance().logToFile("<< Force Item Battle is over >>");
 
-        getTimer().cancel();
-
         // Unregister listeners
         HandlerList.unregisterAll(listener);
+        super.endChallenge();
     }
 
     @Override
     public void runEachSecond() {
-        boolean last5MinutesReached = timer.getRemainingTimeInSeconds() == (5 * 60);
+        boolean last5MinutesReached = getTimer().getRemainingTimeInSeconds() == (5 * 60);
         challengeParticipants.forEach((playerInstance) -> {
             Player player = playerInstance.getPlayer();
             if(!player.isOnline()) {
@@ -112,7 +103,7 @@ public class ForceItemBattleChallenge extends AbstractChallenge<ForceItemBattleC
             // Updating action bar for the time and score
             TextComponent textComponent = new TextComponent(
                     ChatColor.GOLD.toString() + ChatColor.BOLD
-                            + TimeUtil.formatSeconds(timer.getRemainingTimeInSeconds())
+                            + TimeUtil.formatSeconds(getTimer().getRemainingTimeInSeconds())
                             + ChatColor.WHITE + ChatColor.BOLD
                             + " | "
                             + ChatColor.GOLD + ChatColor.BOLD

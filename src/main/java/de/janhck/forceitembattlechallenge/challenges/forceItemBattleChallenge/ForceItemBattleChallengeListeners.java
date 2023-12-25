@@ -1,8 +1,9 @@
 package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
-import de.janhck.forceitembattlechallenge.challenges.AbstractChallengeParticipant;
-import org.bukkit.Location;
+import de.janhck.forceitembattlechallenge.challenges.api.ChallengeParticipant;
+import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,13 +27,14 @@ public class ForceItemBattleChallengeListeners implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent event) { // triggered if a joker is used
-        if (!ChallengesPlugin.getChallengeManager().isRunning()) {
+        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
+        if (!challengeManager.isRunning()) {
             return;
         }
 
         Player player = event.getPlayer();
         Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipant(player);
-        if(!optionalPlayerInstance.isPresent()) {
+        if(optionalPlayerInstance.isEmpty()) {
             return;
         }
 
@@ -71,28 +73,31 @@ public class ForceItemBattleChallengeListeners implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) { // triggered if the player dies
-        if (!ChallengesPlugin.getChallengeManager().isRunning()) {
+        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
+        if (!challengeManager.isRunning()) {
             return;
         }
 
         Player player = event.getEntity();
-        boolean isParticipant = ChallengesPlugin.getChallengeManager().getCurrentChallenge().isParticipant(player);
-        if(isParticipant) {
-            Location location = player.getLocation();
-            player.sendMessage(ChallengesPlugin.PREFIX + "Du bist bei X:" + location.getBlockX() + " Y:" + location.getBlockY() + " Z:" + location.getBlockZ() + " gestorben.");
+        boolean isParticipant = challengeManager.getCurrentChallenge().isParticipant(player);
+        if(!isParticipant) {
+           return;
         }
+
+        player.sendMessage(ChallengesPlugin.PREFIX + "War das ein Bug? Gebe " + ChatColor.WHITE + ChatColor.BOLD + "/challenge return" + ChatColor.GOLD + " ein um zurück zu deinem Todesort zurück zu kommen.");
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!ChallengesPlugin.getChallengeManager().isRunning()) {
+        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
+        if (!challengeManager.isRunning()) {
             return;
         }
 
         Player player = event.getPlayer();
         Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipantByUUID(player.getUniqueId());
         if(optionalPlayerInstance.isPresent()) {
-            AbstractChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
+            ChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
             challengeParticipant.updatePlayer(player);
         }
     }

@@ -1,16 +1,17 @@
-package de.janhck.forceitembattlechallenge.challenges;
+package de.janhck.forceitembattlechallenge.challenges.api;
 
+import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
-public abstract class AbstractChallengeParticipant {
+public abstract class ChallengeParticipant {
 
     // The related player
     protected Player player;
     // The displayed bossbar reference
     protected BossBar bossBar;
 
-    public AbstractChallengeParticipant(Player player) {
+    public ChallengeParticipant(Player player) {
         this.player = player;
         this.bossBar = null;
     }
@@ -21,6 +22,10 @@ public abstract class AbstractChallengeParticipant {
     public abstract void prepare();
 
     public abstract void updateBossBar();
+
+    public Location getLastDeathLocation() {
+        return player.getLastDeathLocation();
+    }
 
     public void cleanUp() {
         bossBar.removePlayer(player);

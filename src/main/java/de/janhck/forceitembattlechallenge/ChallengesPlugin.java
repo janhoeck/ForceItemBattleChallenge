@@ -1,11 +1,9 @@
 package de.janhck.forceitembattlechallenge;
 
 import de.janhck.forceitembattlechallenge.commands.ChallengeCommand;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallengeListeners;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
-import org.bukkit.Bukkit;
+import de.janhck.forceitembattlechallenge.manager.ItemsManager;
 import org.bukkit.ChatColor;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -18,7 +16,8 @@ import java.util.Calendar;
 public final class ChallengesPlugin extends JavaPlugin {
 
     private static ChallengesPlugin instance;
-    private static ChallengeManager challengeManager;
+    private ChallengeManager challengeManager;
+    private ItemsManager itemsManager;
     public static final String PREFIX = ChatColor.WHITE + "[" + ChatColor.GREEN + "ForceItemBattleChallenge" + ChatColor.WHITE + "]" + ChatColor.GOLD + " ";
 
     @Override
@@ -29,9 +28,12 @@ public final class ChallengesPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         challengeManager = new ChallengeManager();
+        itemsManager = new ItemsManager();
 
         // Register commands
-        getCommand("challenge").setExecutor(new ChallengeCommand());
+        ChallengeCommand command = new ChallengeCommand();
+        getCommand("challenge").setExecutor(command);
+        getCommand("c").setExecutor(command);
     }
 
     @Override
@@ -73,7 +75,11 @@ public final class ChallengesPlugin extends JavaPlugin {
         return instance;
     }
 
-    public static ChallengeManager getChallengeManager() {
+    public ChallengeManager getChallengeManager() {
         return challengeManager;
+    }
+
+    public ItemsManager getItemsManager() {
+        return itemsManager;
     }
 }

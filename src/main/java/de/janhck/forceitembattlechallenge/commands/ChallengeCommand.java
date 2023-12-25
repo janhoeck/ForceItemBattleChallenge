@@ -11,12 +11,13 @@ public class ChallengeCommand implements CommandExecutor {
 
     private void sendCommandOverview(CommandSender sender) {
         sender.sendMessage(ChallengesPlugin.PREFIX);
-        sender.sendMessage("/challenge start <time in min> <jokers>");
+        sender.sendMessage("/challenge start");
         sender.sendMessage("/challenge stop");
         sender.sendMessage("/challenge pause");
         sender.sendMessage("/challenge continue");
         sender.sendMessage("/challenge skip <player name>");
         sender.sendMessage("/challenge prepare");
+        sender.sendMessage("/challenge return");
     }
 
     @Override
@@ -41,6 +42,8 @@ public class ChallengeCommand implements CommandExecutor {
                 return new SkipArgument().execute(sender, remainingArguments);
             case "prepare":
                 return new PrepareArgument().execute(sender, remainingArguments);
+            case "return":
+                return new ReturnArgument().execute(sender, remainingArguments);
             default:
                 sendCommandOverview(sender);
                 return false;
