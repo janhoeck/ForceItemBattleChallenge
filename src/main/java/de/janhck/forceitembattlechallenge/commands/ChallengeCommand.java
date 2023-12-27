@@ -1,6 +1,6 @@
 package de.janhck.forceitembattlechallenge.commands;
 
-import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
+import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,13 +10,14 @@ import java.util.Arrays;
 public class ChallengeCommand implements CommandExecutor {
 
     private void sendCommandOverview(CommandSender sender) {
-        sender.sendMessage(ForceItemBattleChallenge.PREFIX);
-        sender.sendMessage("/challenge start <time in min> <jokers>");
+        sender.sendMessage(ChallengesPlugin.PREFIX);
+        sender.sendMessage("/challenge start");
         sender.sendMessage("/challenge stop");
         sender.sendMessage("/challenge pause");
         sender.sendMessage("/challenge continue");
         sender.sendMessage("/challenge skip <player name>");
         sender.sendMessage("/challenge prepare");
+        sender.sendMessage("/challenge return");
     }
 
     @Override
@@ -40,7 +41,11 @@ public class ChallengeCommand implements CommandExecutor {
             case "skip":
                 return new SkipArgument().execute(sender, remainingArguments);
             case "prepare":
+            case "p":
                 return new PrepareArgument().execute(sender, remainingArguments);
+            case "return":
+            case "r":
+                return new ReturnArgument().execute(sender, remainingArguments);
             default:
                 sendCommandOverview(sender);
                 return false;

@@ -1,41 +1,19 @@
 package de.janhck.forceitembattlechallenge.commands;
 
-import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
-import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
-import org.bukkit.Bukkit;
+import de.janhck.forceitembattlechallenge.gui.inventories.ChallengesInventory;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class StartArgument implements ICommandArgument {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (args.length == 2) {
-            try {
-                int timeInSeconds = Integer.parseInt(args[0]) * 60;
-                int jokerAmount = Integer.parseInt(args[1]);
-
-                if (jokerAmount > 64) {
-                    sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Die maximale Anzahl der Joker ist 64.");
-                    return false;
-                }
-
-                ChallengeManager challengeManager = ForceItemBattleChallenge.getGamemanager();
-                if(challengeManager.isRunning()) {
-                    sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Das Challenge wurde bereits gestartet.");
-                    return false;
-                }
-
-                challengeManager.startChallenge(timeInSeconds, jokerAmount);
-                Bukkit.broadcastMessage(ForceItemBattleChallenge.PREFIX + "Die Challenge wurde mit " + jokerAmount + " Jokern gestartet. Schwierigkeit: " + challengeManager.getLevel().toString());
-                return true;
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Usage: /challenge start <time in min> <jokers>");
-                sender.sendMessage(ForceItemBattleChallenge.PREFIX + "<time> and <jokers> have to be numbers");
-                return false;
-            }
+        if(!(sender instanceof Player player)) {
+            return false;
         }
 
-        sender.sendMessage(ForceItemBattleChallenge.PREFIX + "Usage: /challenge start <time in min> <jokers>");
-        return false;
+        ChallengesInventory challengesInventory = new ChallengesInventory();
+        challengesInventory.openInventory(player);
+        return true;
     }
 }

@@ -1,48 +1,41 @@
-package de.janhck.forceitembattlechallenge.challlenge;
+package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
-import de.janhck.forceitembattlechallenge.challlenge.items.ItemDifficultyLevel;
-import de.janhck.forceitembattlechallenge.challlenge.items.ItemsManager;
+import de.janhck.forceitembattlechallenge.ChallengesPlugin;
+import de.janhck.forceitembattlechallenge.challenges.api.ChallengeParticipant;
+import de.janhck.forceitembattlechallenge.manager.ItemsManager;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChallengeParticipant {
+public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
 
-    // The related player
-    private Player player;
-    // The displayed bossbar reference
-    private BossBar bossBar;
+    private final ForceItemBattleChallenge challenge;
     // Contains all finished items
     private final List<Material> finishedItems;
     // The current item the participant needs
     private Material currentItem = null;
-    // Reference to the itemsManager
-    private final ItemsManager itemsManager;
     // The difficulty level of the challenge
-    private final ItemDifficultyLevel level;
-    private int remainingJokerAmount = 0;
+    private int remainingJokerAmount;
     // Last timestamp when the participant skipped an item
     private long lastSkipTimestampMillis = 0L;
 
-    public ChallengeParticipant(Player player, ItemDifficultyLevel level, int jokerAmount, ItemsManager itemsManager) {
-        this.player = player;
+    public ForceItemBattleChallengeParticipant(Player player, ForceItemBattleChallenge challenge) {
+        super(player);
+
         this.finishedItems = new ArrayList<>();
-        this.level = level;
-        this.remainingJokerAmount = jokerAmount;
-        this.itemsManager = itemsManager;
+        this.challenge = challenge;
+        this.remainingJokerAmount = challenge.getJokerAmount();
     }
 
-    /**
-     * Prepares the player for the challenge
-     */
+    @Override
     public void prepare() {
         // Init the first item
         nextItem();
@@ -50,6 +43,7 @@ public class ChallengeParticipant {
         // Common stuff
         player.setHealth(20);
         player.setSaturation(20);
+        player.setFoodLevel(20);
         player.getInventory().clear();
         player.setLevel(0);
         player.setExp(0);
@@ -62,33 +56,35 @@ public class ChallengeParticipant {
     }
 
     public void giveStarterItems() {
+        if(challenge.isWithElytra()) {
+            // Give elytra
+            ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
+            elytraItemStack.addEnchantment(Enchantment.DURABILITY, 3);
+            player.getInventory().addItem(elytraItemStack);
+
+            // Give firework rockets
+            ItemStack fireWorkItemStack = new ItemStack(Material.FIREWORK_ROCKET, 128);
+            FireworkMeta fireworkMeta = (FireworkMeta) fireWorkItemStack.getItemMeta();
+            fireworkMeta.setPower(2);
+            fireWorkItemStack.setItemMeta(fireworkMeta);
+            player.getInventory().addItem(fireWorkItemStack);
+        }
+
+        // Give shulker boxes in different colors
+        player.getInventory().addItem(new ItemStack(Material.LIME_SHULKER_BOX, 1));
+        player.getInventory().addItem(new ItemStack(Material.GREEN_SHULKER_BOX, 1));
+        player.getInventory().addItem(new ItemStack(Material.RED_SHULKER_BOX, 1));
+
         if(remainingJokerAmount > 0) {
             // Create jokers
             ItemStack jokerItemStack = new ItemStack(Material.NETHER_STAR, remainingJokerAmount);
             ItemMeta itemMeta = jokerItemStack.getItemMeta();
             itemMeta.setDisplayName(ChatColor.DARK_PURPLE + "JOKER");
             jokerItemStack.setItemMeta(itemMeta);
-            player.getInventory().addItem(jokerItemStack);
+            player.getInventory().setItem(8, jokerItemStack);
         }
-
-        // Give elytra
-        ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
-        elytraItemStack.addEnchantment(Enchantment.DURABILITY, 3);
-        player.getInventory().addItem(elytraItemStack);
-
-        // Give firework rockets
-        player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 128));
-
-        // Give shulker boxes in different colors
-        player.getInventory().addItem(new ItemStack(Material.LIME_SHULKER_BOX, 1));
-        player.getInventory().addItem(new ItemStack(Material.GREEN_SHULKER_BOX, 1));
-        player.getInventory().addItem(new ItemStack(Material.RED_SHULKER_BOX, 1));
     }
 
-    public void cleanUp() {
-        bossBar.removePlayer(player);
-        bossBar = null;
-    }
 
     public boolean hasCurrentItemInInventory() {
         return player.getInventory().contains(currentItem);
@@ -100,19 +96,23 @@ public class ChallengeParticipant {
      * The next item will always be unique and not used before.
      */
     public void nextItem() {
+        ItemsManager itemsManager = ChallengesPlugin.getInstance().getItemsManager();
         if(currentItem != null) {
             finishedItems.add(currentItem);
         }
 
         Material item = Material.BARRIER;
         while(item == Material.BARRIER) {
-            Material randomItem = itemsManager.getRandomItem(level);
+            Material randomItem = itemsManager.getRandomItem(challenge.getItemDifficultyLevel());
             boolean materialAlreadyUsed = finishedItems.stream().anyMatch((usedMaterial) -> usedMaterial == randomItem);
             if(!materialAlreadyUsed) {
                 item = randomItem;
             }
         }
         currentItem = item;
+
+        // Update tab list name
+        updateTabListName(item.toString());
     }
 
     /**
@@ -130,6 +130,7 @@ public class ChallengeParticipant {
         }
     }
 
+    @Override
     public void updateBossBar() {
         if(currentItem != null) {
             if(bossBar == null) {
@@ -141,17 +142,6 @@ public class ChallengeParticipant {
         }
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void updatePlayer(Player player) {
-        this.player = player;
-
-        // If we update the player, we also need to reinitialize the boss bar
-        this.bossBar = null;
-        this.updateBossBar();
-    }
 
     public List<Material> getFinishedItems() {
         return finishedItems;
@@ -177,4 +167,5 @@ public class ChallengeParticipant {
         long currentTimestampMillis = System.currentTimeMillis();
         return currentTimestampMillis - lastSkipTimestampMillis >= 5000;
     }
+
 }

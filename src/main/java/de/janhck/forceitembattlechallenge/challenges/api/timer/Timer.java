@@ -1,21 +1,19 @@
-package de.janhck.forceitembattlechallenge.challlenge.timer;
+package de.janhck.forceitembattlechallenge.challenges.api.timer;
 
-import de.janhck.forceitembattlechallenge.ForceItemBattleChallenge;
+import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.function.Consumer;
 
 public class Timer extends BukkitRunnable {
 
     private boolean paused = false;
     // The total time in seconds
-    private int totalTimeInSeconds = 0;
+    private int totalTimeInSeconds;
     // The remaining time in seconds
-    private int remainingTimeInSeconds = 0;
-    private final Consumer<Timer> action;
+    private int remainingTimeInSeconds;
+    private final Runnable action;
     private final Runnable endAction;
 
-    public Timer(int timeInSeconds, Consumer<Timer> action, Runnable endAction) {
+    public Timer(int timeInSeconds, Runnable action, Runnable endAction) {
         this.action = action;
         this.endAction = endAction;
 
@@ -24,7 +22,7 @@ public class Timer extends BukkitRunnable {
     }
 
     public void startTimer() {
-        runTaskTimer(ForceItemBattleChallenge.getInstance(), 20, 20);
+        runTaskTimer(ChallengesPlugin.getInstance(), 20, 20);
     }
 
     public void pauseTimer() {
@@ -57,7 +55,7 @@ public class Timer extends BukkitRunnable {
             return;
         }
 
-        action.accept(this);
+        action.run();
         decreaseTime();
 
         if(remainingTimeInSeconds < 0) {

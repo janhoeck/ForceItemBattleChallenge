@@ -1,11 +1,9 @@
 package de.janhck.forceitembattlechallenge;
 
 import de.janhck.forceitembattlechallenge.commands.ChallengeCommand;
-import de.janhck.forceitembattlechallenge.listeners.Listeners;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
-import org.bukkit.Bukkit;
+import de.janhck.forceitembattlechallenge.manager.ItemsManager;
 import org.bukkit.ChatColor;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -15,10 +13,11 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public final class ForceItemBattleChallenge extends JavaPlugin {
+public final class ChallengesPlugin extends JavaPlugin {
 
-    private static ForceItemBattleChallenge instance;
-    private static ChallengeManager challengeManager;
+    private static ChallengesPlugin instance;
+    private ChallengeManager challengeManager;
+    private ItemsManager itemsManager;
     public static final String PREFIX = ChatColor.WHITE + "[" + ChatColor.GREEN + "ForceItemBattleChallenge" + ChatColor.WHITE + "]" + ChatColor.GOLD + " ";
 
     @Override
@@ -28,18 +27,19 @@ public final class ForceItemBattleChallenge extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        challengeManager = new ChallengeManager(getConfig());
+        challengeManager = new ChallengeManager();
+        itemsManager = new ItemsManager();
 
-        PluginManager manager = Bukkit.getPluginManager();
-        manager.registerEvents(new Listeners(), this);
-
-        getCommand("challenge").setExecutor(new ChallengeCommand());
+        // Register commands
+        ChallengeCommand command = new ChallengeCommand();
+        getCommand("challenge").setExecutor(command);
+        getCommand("c").setExecutor(command);
     }
 
     @Override
     public void onDisable() {
         if(challengeManager.isRunning()) {
-            challengeManager.endChallenge();
+            challengeManager.endCurrentChallenge();
         }
     }
 
@@ -71,11 +71,15 @@ public final class ForceItemBattleChallenge extends JavaPlugin {
         return sdf.format(cal.getTime());
     }
 
-    public static ForceItemBattleChallenge getInstance() {
+    public static ChallengesPlugin getInstance() {
         return instance;
     }
 
-    public static ChallengeManager getGamemanager() {
+    public ChallengeManager getChallengeManager() {
         return challengeManager;
+    }
+
+    public ItemsManager getItemsManager() {
+        return itemsManager;
     }
 }
