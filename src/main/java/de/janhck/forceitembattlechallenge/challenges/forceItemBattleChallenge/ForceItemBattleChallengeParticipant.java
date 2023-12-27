@@ -2,7 +2,6 @@ package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.ChallengeParticipant;
-import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.manager.ItemsManager;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
@@ -18,22 +17,22 @@ import java.util.List;
 
 public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
 
+    private final ForceItemBattleChallenge challenge;
     // Contains all finished items
     private final List<Material> finishedItems;
     // The current item the participant needs
     private Material currentItem = null;
     // The difficulty level of the challenge
-    private final ItemDifficultyLevel level;
     private int remainingJokerAmount;
     // Last timestamp when the participant skipped an item
     private long lastSkipTimestampMillis = 0L;
 
-    public ForceItemBattleChallengeParticipant(Player player, ItemDifficultyLevel level, int jokerAmount) {
+    public ForceItemBattleChallengeParticipant(Player player, ForceItemBattleChallenge challenge) {
         super(player);
 
         this.finishedItems = new ArrayList<>();
-        this.level = level;
-        this.remainingJokerAmount = jokerAmount;
+        this.challenge = challenge;
+        this.remainingJokerAmount = challenge.getJokerAmount();
     }
 
     @Override
@@ -57,17 +56,19 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
     }
 
     public void giveStarterItems() {
-        // Give elytra
-        ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
-        elytraItemStack.addEnchantment(Enchantment.DURABILITY, 3);
-        player.getInventory().addItem(elytraItemStack);
+        if(challenge.isWithElytra()) {
+            // Give elytra
+            ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
+            elytraItemStack.addEnchantment(Enchantment.DURABILITY, 3);
+            player.getInventory().addItem(elytraItemStack);
 
-        // Give firework rockets
-        ItemStack fireWorkItemStack = new ItemStack(Material.FIREWORK_ROCKET, 128);
-        FireworkMeta fireworkMeta = (FireworkMeta) fireWorkItemStack.getItemMeta();
-        fireworkMeta.setPower(2);
-        fireWorkItemStack.setItemMeta(fireworkMeta);
-        player.getInventory().addItem(fireWorkItemStack);
+            // Give firework rockets
+            ItemStack fireWorkItemStack = new ItemStack(Material.FIREWORK_ROCKET, 128);
+            FireworkMeta fireworkMeta = (FireworkMeta) fireWorkItemStack.getItemMeta();
+            fireworkMeta.setPower(2);
+            fireWorkItemStack.setItemMeta(fireworkMeta);
+            player.getInventory().addItem(fireWorkItemStack);
+        }
 
         // Give shulker boxes in different colors
         player.getInventory().addItem(new ItemStack(Material.LIME_SHULKER_BOX, 1));
@@ -102,13 +103,16 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
 
         Material item = Material.BARRIER;
         while(item == Material.BARRIER) {
-            Material randomItem = itemsManager.getRandomItem(level);
+            Material randomItem = itemsManager.getRandomItem(challenge.getItemDifficultyLevel());
             boolean materialAlreadyUsed = finishedItems.stream().anyMatch((usedMaterial) -> usedMaterial == randomItem);
             if(!materialAlreadyUsed) {
                 item = randomItem;
             }
         }
         currentItem = item;
+
+        // Update tab list name
+        updateTabListName(item.toString());
     }
 
     /**

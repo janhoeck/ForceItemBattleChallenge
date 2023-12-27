@@ -41,8 +41,10 @@ public class ChallengeCommand implements CommandExecutor {
             case "skip":
                 return new SkipArgument().execute(sender, remainingArguments);
             case "prepare":
+            case "p":
                 return new PrepareArgument().execute(sender, remainingArguments);
             case "return":
+            case "r":
                 return new ReturnArgument().execute(sender, remainingArguments);
             default:
                 sendCommandOverview(sender);

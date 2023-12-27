@@ -1,32 +1,20 @@
-package de.janhck.forceitembattlechallenge.gui.items.settings;
+package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings;
 
 import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.gui.PagedInventoryItem;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
+import de.janhck.forceitembattlechallenge.gui.builder.ItemStackBuilder;
 import de.janhck.forceitembattlechallenge.utils.TimeUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.stream.Stream;
 
 public class TimeSettingsItem extends PagedInventoryItem<Integer> {
 
-    private final ItemStack itemStack;
-    private int timeInSeconds = 0;
+    private int timeInSeconds = 30 * 60; // default 30 min
 
     public TimeSettingsItem(int slot) {
         super(slot);
-
-        ItemStack itemStack = new ItemStack(Material.CLOCK, 1);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("§8» §7Dauer der Challenge");
-        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemStack.setItemMeta(itemMeta);
-        this.itemStack = itemStack;
-        updateItemStackDescription();
 
         addClickConsumer(new ClickAction<Integer>() {
             @Override
@@ -40,15 +28,8 @@ public class TimeSettingsItem extends PagedInventoryItem<Integer> {
                         timeInSeconds = 0;
                     }
                 }
-                updateItemStackDescription();
             }
         });
-    }
-
-    private void updateItemStackDescription() {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setLore(Stream.of("§3" + TimeUtil.formatSeconds(timeInSeconds)).toList());
-        itemStack.setItemMeta(itemMeta);
     }
 
     @Override
@@ -58,7 +39,12 @@ public class TimeSettingsItem extends PagedInventoryItem<Integer> {
 
     @Override
     public ItemStack getItemStack() {
-        return itemStack;
+        return new ItemStackBuilder(Material.CLOCK)
+                .withDisplayName("Dauer der Challenge")
+                .withDescriptionHeadline(TimeUtil.formatSeconds(timeInSeconds))
+                .withLeftClickDescription("Füge 5 Minuten zur Zeit hinzu")
+                .withRightClickDescription("Reduziere um die Zeit um 5 Minuten")
+                .build();
     }
 
     @Override

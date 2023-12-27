@@ -1,29 +1,19 @@
-package de.janhck.forceitembattlechallenge.gui.items.settings;
+package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings;
 
 import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.gui.PagedInventoryItem;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
+import de.janhck.forceitembattlechallenge.gui.builder.ItemStackBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.stream.Stream;
 
 public class JokerAmountItem extends PagedInventoryItem<Integer> {
 
-    private final ItemStack itemStack;
     private int jokerAmount = 1;
 
     public JokerAmountItem(int slot) {
         super(slot);
-
-        ItemStack itemStack = new ItemStack(Material.NETHER_STAR);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("§8» §7Anzahl Joker");
-        itemMeta.setLore(Stream.of("§3" + jokerAmount).toList());
-        itemStack.setItemMeta(itemMeta);
-        this.itemStack = itemStack;
 
         addClickConsumer(new ClickAction<Integer>() {
             @Override
@@ -40,15 +30,8 @@ public class JokerAmountItem extends PagedInventoryItem<Integer> {
                         jokerAmount = 1;
                     }
                 }
-                updateItemStackDescription();
             }
         });
-    }
-
-    private void updateItemStackDescription() {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setLore(Stream.of("§3" + jokerAmount).toList());
-        itemStack.setItemMeta(itemMeta);
     }
 
     @Override
@@ -58,7 +41,12 @@ public class JokerAmountItem extends PagedInventoryItem<Integer> {
 
     @Override
     public ItemStack getItemStack() {
-        return itemStack;
+        return new ItemStackBuilder(Material.NETHER_STAR)
+                .withDisplayName("Anzahl Joker")
+                .withDescriptionHeadline("§3" + jokerAmount)
+                .withLeftClickDescription("Erhöhe die Joker Anzahl um 1")
+                .withRightClickDescription("Verringere die Joker Anzahl um 1")
+                .build();
     }
 
     @Override

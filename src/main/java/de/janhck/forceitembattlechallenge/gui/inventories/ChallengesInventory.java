@@ -1,5 +1,6 @@
 package de.janhck.forceitembattlechallenge.gui.inventories;
 
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.ForceItemBattleChallengeSettingsInventory;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.gui.PagedInventory;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;

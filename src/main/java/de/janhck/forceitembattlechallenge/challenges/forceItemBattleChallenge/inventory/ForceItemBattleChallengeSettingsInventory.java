@@ -1,14 +1,15 @@
-package de.janhck.forceitembattlechallenge.gui.inventories;
+package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.DifficultyLevelItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.ElytraSettingItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.JokerAmountItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.TimeSettingsItem;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.gui.PagedInventory;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
 import de.janhck.forceitembattlechallenge.gui.items.common.BackItem;
 import de.janhck.forceitembattlechallenge.gui.items.common.StartChallengeItem;
-import de.janhck.forceitembattlechallenge.gui.items.settings.DifficultyLevelItem;
-import de.janhck.forceitembattlechallenge.gui.items.settings.JokerAmountItem;
-import de.janhck.forceitembattlechallenge.gui.items.settings.TimeSettingsItem;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -26,6 +27,7 @@ public class ForceItemBattleChallengeSettingsInventory extends PagedInventory {
         addInventoryItem(new TimeSettingsItem(0));
         addInventoryItem(new JokerAmountItem(1));
         addInventoryItem(new DifficultyLevelItem(2));
+        addInventoryItem(new ElytraSettingItem(3));
 
         BackItem backItem = getBackItem();
         addInventoryItem(backItem);

@@ -1,7 +1,8 @@
 package de.janhck.forceitembattlechallenge.gui.items.common;
 
 import de.janhck.forceitembattlechallenge.gui.PagedInventoryItem;
-import de.janhck.forceitembattlechallenge.utils.ItemUtil;
+import de.janhck.forceitembattlechallenge.gui.builder.ItemStackBuilder;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class BackItem extends PagedInventoryItem<Void> {
@@ -17,7 +18,10 @@ public class BackItem extends PagedInventoryItem<Void> {
 
     @Override
     public ItemStack getItemStack() {
-        return ItemUtil.createSkull("f7aacad193e2226971ed95302dba433438be4644fbab5ebf818054061667fbe2", "§8» §7Zurück");
+        return new ItemStackBuilder(Material.PLAYER_HEAD)
+                .withDisplayName("Zurück")
+                .asSkull("f7aacad193e2226971ed95302dba433438be4644fbab5ebf818054061667fbe2")
+                .build();
     }
 
     @Override

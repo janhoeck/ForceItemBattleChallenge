@@ -4,52 +4,47 @@ import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.TimedChallenge;
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
+import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.utils.TimeUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.List;
+import java.util.Map;
 
 public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChallengeParticipant> {
 
-    // The current item difficulty for the challenge
-    private final ItemDifficultyLevel level;
-    // The initial amount of jokers
-    private int jokerAmount;
     private final Listener listener = new ForceItemBattleChallengeListeners(this);
 
-    public ForceItemBattleChallenge(ItemDifficultyLevel level, int jokerAmount, int timeInSeconds) {
-        super(ChallengeType.FORCE_ITEM_BATTLE, timeInSeconds);
-
-        this.level = level;
-        this.jokerAmount = jokerAmount;
+    public ForceItemBattleChallenge(Map<String, Object> settings) {
+        super(ChallengeType.FORCE_ITEM_BATTLE, (Integer) settings.get(Keys.TIME_IN_SECONDS), settings);
     }
 
     @Override
     public void startChallenge(List<Player> players) {
         players.forEach(player -> {
-            ForceItemBattleChallengeParticipant challengeParticipant = new ForceItemBattleChallengeParticipant(player, level, jokerAmount);
+            ForceItemBattleChallengeParticipant challengeParticipant = new ForceItemBattleChallengeParticipant(player, this);
             challengeParticipant.prepare();
 
-            challengeParticipants.add(challengeParticipant);
+            getChallengeParticipants().add(challengeParticipant);
         });
 
-        // Change the time in "world" to "day"
-        Bukkit.getWorld("world").setTime(0);
+        Bukkit.getWorlds().forEach(world -> {
+            world.setTime(0);
+            // keep the inventory, if "withEltrya" is set to true
+            world.setGameRule(GameRule.KEEP_INVENTORY, isWithElytra());
+        });
 
         // register listeners
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(listener, ChallengesPlugin.getInstance());
 
-        Bukkit.broadcastMessage(ChallengesPlugin.PREFIX + "Die Challenge wurde mit " + jokerAmount + " Jokern gestartet. Schwierigkeit: " + level);
+        Bukkit.broadcastMessage(ChallengesPlugin.PREFIX + "Die Challenge wurde mit " + getJokerAmount() + " Jokern gestartet. Schwierigkeit: " + getItemDifficultyLevel());
         super.startChallenge(players);
     }
 
@@ -63,6 +58,12 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
             Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + ": " + ChatColor.WHITE + playerInstance.getScore());
             player.playSound(player, Sound.BLOCK_END_PORTAL_SPAWN, 1, 1);
         });
+
+        Bukkit.getWorlds().forEach(world -> {
+            world.setTime(0);
+            world.setGameRule(GameRule.KEEP_INVENTORY, false);
+        });
+
         ChallengesPlugin.getInstance().logToFile("<< Force Item Battle is over >>");
 
         // Unregister listeners
@@ -73,7 +74,7 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
     @Override
     public void runEachSecond() {
         boolean last5MinutesReached = getTimer().getRemainingTimeInSeconds() == (5 * 60);
-        challengeParticipants.forEach((playerInstance) -> {
+        getChallengeParticipants().forEach((playerInstance) -> {
             Player player = playerInstance.getPlayer();
             if(!player.isOnline()) {
                 return;
@@ -111,5 +112,17 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
             );
             playerInstance.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, textComponent);
         });
+    }
+
+    public ItemDifficultyLevel getItemDifficultyLevel() {
+        return getSetting(Keys.DIFFICULTY);
+    }
+
+    public int getJokerAmount() {
+        return getSetting(Keys.JOKER_AMOUNT);
+    }
+
+    public boolean isWithElytra() {
+        return getSetting(Keys.WITH_ELYTRA);
     }
 }

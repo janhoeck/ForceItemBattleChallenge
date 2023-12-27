@@ -27,9 +27,15 @@ public abstract class ChallengeParticipant {
         return player.getLastDeathLocation();
     }
 
+    public void updateTabListName(String additionalString) {
+        player.setPlayerListName(player.getName() + " §7(" + additionalString  + ")");
+    }
+
     public void cleanUp() {
         bossBar.removePlayer(player);
         bossBar = null;
+        // reset name in tab list
+        player.setPlayerListName(player.getName());
     }
 
     public Player getPlayer() {

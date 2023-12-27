@@ -79,7 +79,7 @@ public class ForceItemBattleChallengeListeners implements Listener {
         }
 
         Player player = event.getEntity();
-        boolean isParticipant = challengeManager.getCurrentChallenge().isParticipant(player);
+        boolean isParticipant = challenge.isParticipant(player);
         if(!isParticipant) {
            return;
         }

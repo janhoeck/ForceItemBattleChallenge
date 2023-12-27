@@ -1,9 +1,9 @@
 package de.janhck.forceitembattlechallenge.gui;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
-import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
-import de.janhck.forceitembattlechallenge.utils.ItemUtil;
+import de.janhck.forceitembattlechallenge.gui.builder.ItemStackBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
@@ -14,13 +14,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+public abstract class PagedInventory extends Interactable {
 
-public abstract class PagedInventory {
-
-    private Inventory inventory;
-    private List<PagedInventoryItem> inventoryItems = new LinkedList<>();
-    private List<ClickAction> clickConsumerList = new LinkedList<>();
-    private PagedInventoryListeners listeners = new PagedInventoryListeners(this);
+    private final Inventory inventory;
+    private final List<PagedInventoryItem<?>> inventoryItems = new LinkedList<>();
+    private final PagedInventoryListeners listeners = new PagedInventoryListeners(this);
 
     public PagedInventory() {
         this.inventory = createInventory();
@@ -30,7 +28,7 @@ public abstract class PagedInventory {
         inventory.clear();
 
         // Predefine all slots with a placeholder
-        IntStream.range(0, inventory.getSize()).forEach(slot -> inventory.setItem(slot, ItemUtil.createGUIPlaceholderItem()));
+        IntStream.range(0, inventory.getSize()).forEach(slot -> inventory.setItem(slot, new ItemStackBuilder(Material.GRAY_STAINED_GLASS_PANE).build()));
 
         inventoryItems.forEach(item -> {
             inventory.setItem(item.getSlot(), item.getItemStack());
@@ -61,19 +59,11 @@ public abstract class PagedInventory {
         return inventory;
     }
 
-    public List<ClickAction> getClickConsumers() {
-        return clickConsumerList;
-    }
-
-    public void addClickConsumer(ClickAction clickAction) {
-        clickConsumerList.add(clickAction);
-    }
-
     public void addInventoryItem(PagedInventoryItem<?> item) {
         inventoryItems.add(item);
     }
 
-    public Optional<PagedInventoryItem> findInventoryItem(ItemStack itemStack) {
+    public Optional<PagedInventoryItem<?>> findInventoryItem(ItemStack itemStack) {
         return inventoryItems
                 .stream()
                 .filter(item -> item.getItemStack().equals(itemStack))

@@ -23,7 +23,7 @@ public class PagedInventoryListeners implements Listener {
 
         event.setCancelled(true);
 
-        Optional<PagedInventoryItem> optionalInventoryItem = pagedInventory.findInventoryItem(event.getCurrentItem());
+        Optional<PagedInventoryItem<?>> optionalInventoryItem = pagedInventory.findInventoryItem(event.getCurrentItem());
         if(optionalInventoryItem.isEmpty()) {
             return;
         }
@@ -31,11 +31,9 @@ public class PagedInventoryListeners implements Listener {
         PagedInventoryItem<?> inventoryItem = optionalInventoryItem.get();
         ClickAction.Handler<?> clickActionHandler = new ClickAction.Handler<>(event, inventoryItem);
 
-        // Execute click listeners for the item
-        inventoryItem.getClickConsumers().forEach(consumer -> consumer.handleClick(clickActionHandler));
-
-        // Execute click listeners for the inventory
-        pagedInventory.getClickConsumers().forEach(consumer -> consumer.handleClick(clickActionHandler));
+        // Execute click listeners
+        inventoryItem.callClickConsumers(clickActionHandler);
+        pagedInventory.callClickConsumers(clickActionHandler);
 
         // Update the item at the slot, because an action can change the item metadata
         pagedInventory.getInventory().setItem(event.getSlot(), inventoryItem.getItemStack());

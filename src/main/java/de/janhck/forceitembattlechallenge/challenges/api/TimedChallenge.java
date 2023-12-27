@@ -6,15 +6,16 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class TimedChallenge<P extends ChallengeParticipant> extends Challenge<P> {
 
-    private Timer timer;
+    private final Timer timer;
     // All consumers who want to be notified if the challenge ends.
     private final List<Runnable> challengeEndsConsumers;
 
-    public TimedChallenge(ChallengeType type, int timeInSeconds) {
-        super(type);
+    public TimedChallenge(ChallengeType type, int timeInSeconds, Map<String, Object> settings) {
+        super(type, settings);
 
         this.challengeEndsConsumers = new ArrayList<>();
         this.timer = new Timer(timeInSeconds, this::runEachSecond, this::endChallenge);

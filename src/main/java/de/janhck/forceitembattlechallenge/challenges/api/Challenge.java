@@ -3,18 +3,17 @@ package de.janhck.forceitembattlechallenge.challenges.api;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Challenge<P extends ChallengeParticipant> {
 
     private final ChallengeType type;
-    protected final List<P> challengeParticipants = new ArrayList<>();
+    private final List<P> challengeParticipants = new ArrayList<>();
+    private final Map<String, Object> settings;
 
-    public Challenge(ChallengeType type) {
+    public Challenge(ChallengeType type, Map<String, Object> settings) {
         this.type = type;
+        this.settings = settings;
     }
 
     /**
@@ -66,5 +65,9 @@ public abstract class Challenge<P extends ChallengeParticipant> {
      */
     public ChallengeType getType() {
         return type;
+    }
+
+    public <T> T getSetting(String key) {
+        return (T) settings.get(key);
     }
 }
