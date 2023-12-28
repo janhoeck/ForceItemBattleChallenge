@@ -25,7 +25,7 @@ public class ItemStackBuilder {
     private final ItemStack itemStack;
 
     public ItemStackBuilder(Material material) {
-        ItemStack itemStack = new ItemStack(material);
+        ItemStack itemStack = new ItemStack(material, 1);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemStack.setItemMeta(itemMeta);
@@ -60,6 +60,17 @@ public class ItemStackBuilder {
 
     public ItemStackBuilder withDescription(String[] description) {
         this.description = description;
+        return this;
+    }
+
+    public ItemStackBuilder withAmount(int amount) {
+        if(amount > 64) {
+            itemStack.setAmount(64);
+        } else if(amount <= 0) {
+            itemStack.setAmount(1);
+        } else {
+            itemStack.setAmount(amount);
+        }
         return this;
     }
 

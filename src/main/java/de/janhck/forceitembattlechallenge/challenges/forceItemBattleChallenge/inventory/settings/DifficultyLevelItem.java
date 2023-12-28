@@ -1,7 +1,6 @@
 package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings;
 
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
-import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.gui.PagedInventoryItem;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
 import de.janhck.forceitembattlechallenge.gui.builder.ItemStackBuilder;
@@ -11,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class DifficultyLevelItem extends PagedInventoryItem<ItemDifficultyLevel> {
 
+    public static String KEY = "difficulty";
     private ItemDifficultyLevel level = ItemDifficultyLevel.EASY;
 
     public DifficultyLevelItem(int slot) {
@@ -18,7 +18,7 @@ public class DifficultyLevelItem extends PagedInventoryItem<ItemDifficultyLevel>
         addClickConsumer(new ClickAction<ItemDifficultyLevel>() {
             @Override
             public void handleClick(Handler<ItemDifficultyLevel> handler) {
-                InventoryClickEvent event = handler.getEvent();
+                InventoryClickEvent event = handler.event();
                 if(event.isLeftClick()) {
                     level = level.next();
                 } else if(event.isRightClick()) {
@@ -29,7 +29,7 @@ public class DifficultyLevelItem extends PagedInventoryItem<ItemDifficultyLevel>
     }
     @Override
     public String getKey() {
-        return Keys.DIFFICULTY;
+        return KEY;
     }
 
     @Override

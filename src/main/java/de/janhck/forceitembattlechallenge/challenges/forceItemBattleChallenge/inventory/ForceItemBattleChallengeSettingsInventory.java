@@ -1,10 +1,7 @@
 package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.DifficultyLevelItem;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.ElytraSettingItem;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.JokerAmountItem;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.TimeSettingsItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.*;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.gui.PagedInventory;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
@@ -24,10 +21,11 @@ public class ForceItemBattleChallengeSettingsInventory extends PagedInventory {
     public ForceItemBattleChallengeSettingsInventory(PagedInventory previousInventory) {
         this.previousInventory = previousInventory;
 
-        addInventoryItem(new TimeSettingsItem(0));
-        addInventoryItem(new JokerAmountItem(1));
-        addInventoryItem(new DifficultyLevelItem(2));
-        addInventoryItem(new ElytraSettingItem(3));
+        addInventoryItem(new ModeSettingItem(0));
+        addInventoryItem(new TimeSettingItem(1));
+        addInventoryItem(new JokerAmountItem(2));
+        addInventoryItem(new DifficultyLevelItem(3));
+        addInventoryItem(new ElytraSettingItem(4));
 
         BackItem backItem = getBackItem();
         addInventoryItem(backItem);
@@ -54,12 +52,10 @@ public class ForceItemBattleChallengeSettingsInventory extends PagedInventory {
         startChallengeItem.addClickConsumer(new ClickAction() {
             @Override
             public void handleClick(Handler handler) {
-                ChallengeType challengeType = (ChallengeType) getPreviousInventory().getResults().get("challengeType");
                 Map<String, Object> parameters = getResults();
-
                 ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
-                challengeManager.startChallengeByType(challengeType, parameters);
-                closeInventory(handler.getEvent().getWhoClicked());
+                challengeManager.startChallengeByType(ChallengeType.FORCE_ITEM_BATTLE, parameters);
+                closeInventory(handler.event().getWhoClicked());
             }
         });
         return startChallengeItem;

@@ -21,7 +21,7 @@ public class ChallengesInventory extends PagedInventory {
         addClickConsumer(new ClickAction<ChallengeType>() {
             @Override
             public void handleClick(Handler<ChallengeType> handler) {
-                HumanEntity whoClicked = handler.getEvent().getWhoClicked();
+                HumanEntity whoClicked = handler.event().getWhoClicked();
                 nextInventory = new ForceItemBattleChallengeSettingsInventory(instance);
 
                 // Close the current inventory

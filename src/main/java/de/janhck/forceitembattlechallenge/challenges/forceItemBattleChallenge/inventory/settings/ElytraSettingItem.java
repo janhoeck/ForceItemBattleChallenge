@@ -1,6 +1,5 @@
 package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings;
 
-import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.gui.PagedInventoryItem;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
 import de.janhck.forceitembattlechallenge.gui.builder.ItemStackBuilder;
@@ -10,29 +9,30 @@ import org.bukkit.util.ChatPaginator;
 
 public class ElytraSettingItem extends PagedInventoryItem<Boolean> {
 
-    private boolean withElytra = true;
+    public static String KEY = "withElytra";
+    private boolean isElytraActive = true;
 
     public ElytraSettingItem(int slot) {
         super(slot);
 
-        addClickConsumer(new ClickAction() {
+        addClickConsumer(new ClickAction<Boolean>() {
             @Override
-            public void handleClick(Handler handler) {
-                withElytra = !withElytra;
+            public void handleClick(Handler<Boolean> handler) {
+                isElytraActive = !isElytraActive;
             }
         });
     }
 
     @Override
     public String getKey() {
-        return Keys.WITH_ELYTRA;
+        return KEY;
     }
 
     @Override
     public ItemStack getItemStack() {
         return new ItemStackBuilder(Material.ELYTRA)
                 .withDisplayName("Elytra aktivieren")
-                .withDescriptionHeadline(withElytra ? "§aAktiviert" : "§cDeaktiviert")
+                .withDescriptionHeadline(isElytraActive ? "§aAktiviert" : "§cDeaktiviert")
                 .withLeftClickDescription("Aktiviert oder deaktiviert diese Einstellung")
                 .withDescription(ChatPaginator.paginate("§7Ist diese Einstellung aktiviert, so kann ein Spieler beim Tod nicht mehr seine Items verlieren.", 25))
                 .build();
@@ -40,7 +40,7 @@ public class ElytraSettingItem extends PagedInventoryItem<Boolean> {
 
     @Override
     public Boolean getResult() {
-        return withElytra;
+        return isElytraActive;
     }
 
 }

@@ -2,6 +2,8 @@ package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.ChallengeParticipant;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.ModeSettingItem;
+import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.manager.ItemsManager;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
@@ -97,18 +99,39 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
      */
     public void nextItem() {
         ItemsManager itemsManager = ChallengesPlugin.getInstance().getItemsManager();
+        ForceItemBattleChallengeMode mode = challenge.getSetting(ModeSettingItem.KEY);
+        ItemDifficultyLevel level = challenge.getItemDifficultyLevel();
+
         if(currentItem != null) {
             finishedItems.add(currentItem);
         }
 
         Material item = Material.BARRIER;
-        while(item == Material.BARRIER) {
-            Material randomItem = itemsManager.getRandomItem(challenge.getItemDifficultyLevel());
-            boolean materialAlreadyUsed = finishedItems.stream().anyMatch((usedMaterial) -> usedMaterial == randomItem);
-            if(!materialAlreadyUsed) {
-                item = randomItem;
+        switch (mode) {
+            // If the current mode is ALL_SAME_ITEMS, we just pick each item by index.
+            // Because of this we can be sure that everyone is getting the same items in the same order.
+            case ALL_SAME_ITEMS: {
+                List<Material> items = itemsManager.getItems(level);
+                int index = currentItem == null
+                        // Start with the first item, if no item is selected before
+                        ? 0
+                        // Always increase by +1, so we get the next item
+                        : (items.indexOf(currentItem) + 1);
+                item = items.get(index);
+                break;
             }
+            // If the mode is DEFAULT, we want to pick random items
+            default:
+                while(item == Material.BARRIER) {
+                    Material randomItem = itemsManager.getRandomItem(challenge.getItemDifficultyLevel());
+                    boolean materialAlreadyUsed = finishedItems.stream().anyMatch((usedMaterial) -> usedMaterial == randomItem);
+                    if(!materialAlreadyUsed) {
+                        item = randomItem;
+                    }
+                }
+                break;
         }
+
         currentItem = item;
 
         // Update tab list name

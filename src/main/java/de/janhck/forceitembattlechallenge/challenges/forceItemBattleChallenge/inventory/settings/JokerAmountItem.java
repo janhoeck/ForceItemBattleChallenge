@@ -1,6 +1,5 @@
 package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings;
 
-import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.gui.PagedInventoryItem;
 import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
 import de.janhck.forceitembattlechallenge.gui.builder.ItemStackBuilder;
@@ -10,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class JokerAmountItem extends PagedInventoryItem<Integer> {
 
+    public static String KEY = "jokerAmount";
     private int jokerAmount = 1;
 
     public JokerAmountItem(int slot) {
@@ -18,7 +18,7 @@ public class JokerAmountItem extends PagedInventoryItem<Integer> {
         addClickConsumer(new ClickAction<Integer>() {
             @Override
             public void handleClick(Handler<Integer> handler) {
-                InventoryClickEvent event = handler.getEvent();
+                InventoryClickEvent event = handler.event();
                 if(event.isLeftClick()) {
                     jokerAmount = jokerAmount + 1;
                     if(jokerAmount >= 64) {
@@ -36,13 +36,14 @@ public class JokerAmountItem extends PagedInventoryItem<Integer> {
 
     @Override
     public String getKey() {
-        return Keys.JOKER_AMOUNT;
+        return KEY;
     }
 
     @Override
     public ItemStack getItemStack() {
         return new ItemStackBuilder(Material.NETHER_STAR)
                 .withDisplayName("Anzahl Joker")
+                .withAmount(jokerAmount)
                 .withDescriptionHeadline("§3" + jokerAmount)
                 .withLeftClickDescription("Erhöhe die Joker Anzahl um 1")
                 .withRightClickDescription("Verringere die Joker Anzahl um 1")

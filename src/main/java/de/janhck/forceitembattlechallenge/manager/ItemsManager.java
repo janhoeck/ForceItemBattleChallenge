@@ -16,13 +16,13 @@ public class ItemsManager {
         load();
     }
 
-    private void load() {
+    public void load() {
         loadItems(ItemDifficultyLevel.EASY, "items/easy.txt");
         loadItems(ItemDifficultyLevel.MEDIUM, "items/medium.txt");
         loadItems(ItemDifficultyLevel.HARD, "items/hard.txt");
     }
 
-    public void loadItems(ItemDifficultyLevel level, String path) {
+    private void loadItems(ItemDifficultyLevel level, String path) {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
         List<String> lines = IOUtils.readLines(inputStream, "UTF-8");
         List<Material> materials = lines

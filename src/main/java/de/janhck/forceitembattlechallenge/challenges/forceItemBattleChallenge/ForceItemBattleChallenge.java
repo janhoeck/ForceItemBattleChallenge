@@ -2,9 +2,12 @@ package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.TimedChallenge;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.DifficultyLevelItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.ElytraSettingItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.JokerAmountItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.TimeSettingItem;
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
-import de.janhck.forceitembattlechallenge.constants.Keys;
 import de.janhck.forceitembattlechallenge.utils.TimeUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -22,7 +25,7 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
     private final Listener listener = new ForceItemBattleChallengeListeners(this);
 
     public ForceItemBattleChallenge(Map<String, Object> settings) {
-        super(ChallengeType.FORCE_ITEM_BATTLE, (Integer) settings.get(Keys.TIME_IN_SECONDS), settings);
+        super(ChallengeType.FORCE_ITEM_BATTLE, (Integer) settings.get(TimeSettingItem.KEY), settings);
     }
 
     @Override
@@ -63,6 +66,9 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
             world.setTime(0);
             world.setGameRule(GameRule.KEEP_INVENTORY, false);
         });
+
+        // Reload all items, because it will mix them up
+        ChallengesPlugin.getInstance().getItemsManager().load();
 
         ChallengesPlugin.getInstance().logToFile("<< Force Item Battle is over >>");
 
@@ -115,14 +121,14 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
     }
 
     public ItemDifficultyLevel getItemDifficultyLevel() {
-        return getSetting(Keys.DIFFICULTY);
+        return getSetting(DifficultyLevelItem.KEY);
     }
 
     public int getJokerAmount() {
-        return getSetting(Keys.JOKER_AMOUNT);
+        return getSetting(JokerAmountItem.KEY);
     }
 
     public boolean isWithElytra() {
-        return getSetting(Keys.WITH_ELYTRA);
+        return getSetting(ElytraSettingItem.KEY);
     }
 }
