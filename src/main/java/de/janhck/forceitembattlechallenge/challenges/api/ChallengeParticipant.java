@@ -28,7 +28,7 @@ public abstract class ChallengeParticipant {
     }
 
     public void updateTabListName(String additionalString) {
-        player.setPlayerListName(player.getName() + " §7(" + additionalString  + ")");
+        player.setPlayerListName(player.getName() + " §7(" + additionalString  + "§7)");
     }
 
     public void cleanUp() {

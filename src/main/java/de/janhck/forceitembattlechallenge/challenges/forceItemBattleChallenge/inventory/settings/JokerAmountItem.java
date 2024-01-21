@@ -26,8 +26,8 @@ public class JokerAmountItem extends PagedInventoryItem<Integer> {
                     }
                 } else if(event.isRightClick()) {
                     jokerAmount = jokerAmount - 1;
-                    if(jokerAmount <= 1) {
-                        jokerAmount = 1;
+                    if(jokerAmount <= 0) {
+                        jokerAmount = 0;
                     }
                 }
             }

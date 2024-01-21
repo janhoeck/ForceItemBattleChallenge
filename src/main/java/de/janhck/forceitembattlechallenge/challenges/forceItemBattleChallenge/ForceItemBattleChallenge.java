@@ -2,10 +2,7 @@ package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.TimedChallenge;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.DifficultyLevelItem;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.ElytraSettingItem;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.JokerAmountItem;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.TimeSettingItem;
+import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.*;
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.utils.TimeUtil;
@@ -130,5 +127,9 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
 
     public boolean isWithElytra() {
         return getSetting(ElytraSettingItem.KEY);
+    }
+
+    public ForceItemBattleChallengeMode getMode() {
+        return getSetting(ModeSettingItem.KEY);
     }
 }

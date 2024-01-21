@@ -53,7 +53,7 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
         player.playSound(player, Sound.BLOCK_END_PORTAL_SPAWN, 1, 1);
         player.setGameMode(GameMode.SURVIVAL);
 
-        // Starter items
+         // Starter items
         giveStarterItems();
     }
 
@@ -61,13 +61,14 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
         if(challenge.isWithElytra()) {
             // Give elytra
             ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
-            elytraItemStack.addEnchantment(Enchantment.DURABILITY, 3);
+            elytraItemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 100);
             player.getInventory().addItem(elytraItemStack);
 
             // Give firework rockets
-            ItemStack fireWorkItemStack = new ItemStack(Material.FIREWORK_ROCKET, 128);
+            ItemStack fireWorkItemStack = new ItemStack(Material.FIREWORK_ROCKET, 1);
             FireworkMeta fireworkMeta = (FireworkMeta) fireWorkItemStack.getItemMeta();
             fireworkMeta.setPower(2);
+            fireworkMeta.setDisplayName("Infinite Firework");
             fireWorkItemStack.setItemMeta(fireworkMeta);
             player.getInventory().addItem(fireWorkItemStack);
         }
@@ -99,7 +100,7 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
      */
     public void nextItem() {
         ItemsManager itemsManager = ChallengesPlugin.getInstance().getItemsManager();
-        ForceItemBattleChallengeMode mode = challenge.getSetting(ModeSettingItem.KEY);
+        ForceItemBattleChallengeMode mode = challenge.getMode();
         ItemDifficultyLevel level = challenge.getItemDifficultyLevel();
 
         if(currentItem != null) {
@@ -131,11 +132,15 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
                 }
                 break;
         }
-
+        // Update the current item
         currentItem = item;
 
-        // Update tab list name
-        updateTabListName(item.toString());
+        if(mode == ForceItemBattleChallengeMode.DEFAULT) {
+            // Update tab list name
+            updateTabListName( "§f" + item.toString() + " §7| §fScore " + getScore());
+        } else if(mode == ForceItemBattleChallengeMode.ALL_SAME_ITEMS) {
+            updateTabListName("§f" + getScore());
+        }
     }
 
     /**

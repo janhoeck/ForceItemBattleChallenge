@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Optional;
 
@@ -26,12 +28,7 @@ public class ForceItemBattleChallengeListeners implements Listener {
     }
 
     @EventHandler
-    public void onClick(PlayerInteractEvent event) { // triggered if a joker is used
-        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
-        if (!challengeManager.isRunning()) {
-            return;
-        }
-
+    public void onJokerUse(PlayerInteractEvent event) { // triggered if a joker is used
         Player player = event.getPlayer();
         Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipant(player);
         if(optionalPlayerInstance.isEmpty()) {
@@ -69,6 +66,49 @@ public class ForceItemBattleChallengeListeners implements Listener {
 
         challengeParticipant.decreaseRemainingJokerAmount();
         challengeParticipant.skipItem();
+    }
+
+    /**
+     * Unlimited fireworks if elytra is enabled
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onFireworkUse(PlayerInteractEvent event) {
+        if(!challenge.isWithElytra()) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipant(player);
+        if(optionalPlayerInstance.isEmpty()) {
+            return;
+        }
+
+        // Check if the player interacted with an item in their hand.
+        if(!event.hasItem()) {
+            return;
+        }
+
+        // Only accept RIGHT_CLICK_AIR and RIGHT_CLICK_BLOCK actions
+        if(event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        ItemStack itemStack = event.getItem();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if(!itemMeta.getDisplayName().equalsIgnoreCase("Infinite Firework")) {
+            return;
+        }
+
+        if(player.isGliding() && !event.hasBlock()) {
+            if(itemStack.getAmount() == 1) {
+                itemStack.setAmount(2);
+            } else {
+                event.setCancelled(true);
+            }
+        } else {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
