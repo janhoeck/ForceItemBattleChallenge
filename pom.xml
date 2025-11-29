@@ -58,34 +58,19 @@
           <id>sonatype</id>
           <url>https://oss.sonatype.org/content/groups/public/</url>
       </repository>
-      <repository>
-          <id>pagedinventories-repo</id>
-          <url>https://oss.sonatype.org/content/groups/public/</url>
-      </repository>
   </repositories>
 
   <dependencies>
       <dependency>
           <groupId>org.spigotmc</groupId>
           <artifactId>spigot-api</artifactId>
-          <version>1.20.2-R0.1-SNAPSHOT</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.spigotmc</groupId>
-          <artifactId>spigot</artifactId>
-          <version>1.20.2-R0.1-SNAPSHOT</version>
+          <version>1.21.10-R0.1-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
-          <version>2.15.1</version>
-      </dependency>
-      <dependency>
-          <groupId>com.tchristofferson</groupId>
-          <artifactId>PagedInventories</artifactId>
-          <version>2.3-SNAPSHOT</version>
+          <version>2.21.0</version>
       </dependency>
   </dependencies>
 </project>

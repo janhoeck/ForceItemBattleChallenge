@@ -78,7 +78,7 @@ public class ItemStackBuilder {
         ItemMeta meta = itemStack.getItemMeta();
         SkullMeta skullMeta = (SkullMeta) meta;
 
-        PlayerProfile profile = Bukkit.createPlayerProfile("Mr Bob");
+        PlayerProfile profile = Bukkit.createPlayerProfile("MrBob");
         PlayerTextures textures = profile.getTextures();
         try {
             textures.setSkin(new URL("http://textures.minecraft.net/texture/" + id));

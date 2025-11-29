@@ -9,6 +9,7 @@ import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -61,7 +62,9 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
         if(challenge.isWithElytra()) {
             // Give elytra
             ItemStack elytraItemStack = new ItemStack(Material.ELYTRA, 1);
-            elytraItemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 100);
+            ItemMeta elytraMeta = elytraItemStack.getItemMeta();
+            elytraMeta.setUnbreakable(true);
+            elytraItemStack.setItemMeta(elytraMeta);
             player.getInventory().addItem(elytraItemStack);
 
             // Give firework rockets
