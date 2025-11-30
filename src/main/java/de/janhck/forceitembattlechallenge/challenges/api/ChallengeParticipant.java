@@ -1,7 +1,8 @@
 package de.janhck.forceitembattlechallenge.challenges.api;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 public abstract class ChallengeParticipant {
@@ -27,12 +28,12 @@ public abstract class ChallengeParticipant {
         return player.getLastDeathLocation();
     }
 
-    public void updateTabListName(String additionalString) {
-        player.setPlayerListName(player.getName() + " §7(" + additionalString  + "§7)");
+    public void updateTabListName(Component tabName) {
+        player.playerListName(tabName);
     }
 
     public void cleanUp() {
-        bossBar.removePlayer(player);
+        player.hideBossBar(bossBar);
         bossBar = null;
         // reset name in tab list
         player.setPlayerListName(player.getName());

@@ -6,6 +6,9 @@ import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.in
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
 import de.janhck.forceitembattlechallenge.utils.TimeUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -89,7 +92,11 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
                 Material currentItem = playerInstance.getCurrentItem();
                 playerInstance.nextItem();
 
-                player.sendMessage(ChatColor.GREEN + "✔ " + ChatColor.WHITE + currentItem);
+                player.sendMessage(
+                        Component.text("✔ ", NamedTextColor.GREEN)
+                                .append(Component.translatable(currentItem.translationKey())
+                                        .color(NamedTextColor.WHITE))
+                );
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
 
                 ChallengesPlugin.getInstance().logToFile(player.getName() + " got item: " + currentItem + " | new points: " + playerInstance.getScore());
@@ -105,15 +112,17 @@ public class ForceItemBattleChallenge extends TimedChallenge<ForceItemBattleChal
             playerInstance.updateBossBar();
 
             // Updating action bar for the time and score
-            TextComponent textComponent = new TextComponent(
-                    ChatColor.GOLD.toString() + ChatColor.BOLD
-                            + TimeUtil.formatSeconds(getTimer().getRemainingTimeInSeconds())
-                            + ChatColor.WHITE + ChatColor.BOLD
-                            + " | "
-                            + ChatColor.GOLD + ChatColor.BOLD
-                            + playerInstance.getScore()
-            );
-            playerInstance.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, textComponent);
+            Component actionBar = Component.text(TimeUtil.formatSeconds(getTimer().getRemainingTimeInSeconds()))
+                    .color(NamedTextColor.GOLD)
+                    .decorate(TextDecoration.BOLD)
+                    .append(Component.text(" | ")
+                            .color(NamedTextColor.WHITE)
+                            .decorate(TextDecoration.BOLD))
+                    .append(Component.text(String.valueOf(playerInstance.getScore()))
+                            .color(NamedTextColor.GOLD)
+                            .decorate(TextDecoration.BOLD));
+
+            playerInstance.getPlayer().sendActionBar(actionBar);
         });
     }
 

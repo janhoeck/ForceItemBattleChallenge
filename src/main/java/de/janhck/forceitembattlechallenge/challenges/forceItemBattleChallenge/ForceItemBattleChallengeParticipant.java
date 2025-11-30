@@ -2,14 +2,12 @@ package de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.ChallengeParticipant;
-import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.inventory.settings.ModeSettingItem;
 import de.janhck.forceitembattlechallenge.constants.ItemDifficultyLevel;
 import de.janhck.forceitembattlechallenge.manager.ItemsManager;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -139,10 +137,19 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
         currentItem = item;
 
         if(mode == ForceItemBattleChallengeMode.DEFAULT) {
-            // Update tab list name
-            updateTabListName( "§f" + item.toString() + " §7| §fScore " + getScore());
+            Component tabName = Component.text(player.getName(), NamedTextColor.WHITE)
+                    .append(Component.text(" (", NamedTextColor.DARK_GRAY))
+                    .append(Component.translatable(item.translationKey()).color(NamedTextColor.GOLD))
+                    .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text(getScore(), NamedTextColor.GOLD))
+                    .append(Component.text(")", NamedTextColor.DARK_GRAY));
+            updateTabListName(tabName);
         } else if(mode == ForceItemBattleChallengeMode.ALL_SAME_ITEMS) {
-            updateTabListName("§f" + getScore());
+            Component tabName = Component.text(player.getName(), NamedTextColor.WHITE)
+                    .append(Component.text(" (", NamedTextColor.DARK_GRAY))
+                    .append(Component.text(getScore(), NamedTextColor.GOLD))
+                    .append(Component.text(")", NamedTextColor.DARK_GRAY));
+            updateTabListName(tabName);
         }
     }
 
@@ -164,12 +171,13 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
     @Override
     public void updateBossBar() {
         if(currentItem != null) {
-            if(bossBar == null) {
-                bossBar = Bukkit.createBossBar(currentItem.toString(), BarColor.WHITE, BarStyle.SOLID);
-                bossBar.addPlayer(player);
-            }
+            Component itemName = Component.translatable(currentItem.translationKey());
 
-            bossBar.setTitle(currentItem.toString());
+            if(bossBar == null) {
+                bossBar = BossBar.bossBar(itemName, 1.0f, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS);
+                player.showBossBar(bossBar);
+            }
+            bossBar.name(itemName);
         }
     }
 
