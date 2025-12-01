@@ -3,8 +3,8 @@ package de.janhck.forceitembattlechallenge.commands;
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.Challenge;
 import de.janhck.forceitembattlechallenge.challenges.forceItemBattleChallenge.ForceItemBattleChallengeParticipant;
-import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
 import de.janhck.forceitembattlechallenge.constants.ChallengeType;
+import de.janhck.forceitembattlechallenge.utils.ValidationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,7 +14,8 @@ import java.util.Optional;
 public class SkipArgument implements ICommandArgument {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
+        Optional<Player> playerOpt = ValidationUtil.validatePlayer(sender);
+        if (playerOpt.isEmpty()) {
             return false;
         }
 
@@ -23,9 +24,8 @@ public class SkipArgument implements ICommandArgument {
             return false;
         }
 
-        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
-        if (!challengeManager.isRunning()) {
-            sender.sendMessage(ChallengesPlugin.PREFIX + "The Challenge wurde noch nicht gestartet. Starte diese erst mit /start.");
+        Optional<Challenge<?>> challengeOpt = ValidationUtil.validateRunningChallenge(sender);
+        if (challengeOpt.isEmpty()) {
             return false;
         }
 
@@ -35,15 +35,16 @@ public class SkipArgument implements ICommandArgument {
             return false;
         }
 
-        Challenge challenge = challengeManager.getCurrentChallenge();
+        Challenge<?> challenge = challengeOpt.get();
+
         if(challenge.getType() == ChallengeType.FORCE_ITEM_BATTLE) {
-            Optional<ForceItemBattleChallengeParticipant> optionalPlayerInstance = challenge.getChallengeParticipant(targetPlayer);
-            if(optionalPlayerInstance.isEmpty()) {
+            Optional<ForceItemBattleChallengeParticipant> participantOpt = ValidationUtil.validateParticipant(challenge, targetPlayer);
+            if(participantOpt.isEmpty()) {
                 sender.sendMessage(ChallengesPlugin.PREFIX + "Dieser Spieler nimmt nicht an der Challenge teil.");
                 return false;
             }
 
-            ForceItemBattleChallengeParticipant challengeParticipant = optionalPlayerInstance.get();
+            ForceItemBattleChallengeParticipant challengeParticipant = participantOpt.get();
             challengeParticipant.skipItem();
             Bukkit.broadcastMessage(ChallengesPlugin.PREFIX + targetPlayer.getName() + " hat " + challengeParticipant.getCurrentItem().toString() + " geskippt.");
             return true;

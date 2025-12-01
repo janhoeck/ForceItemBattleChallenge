@@ -58,7 +58,7 @@ public class Timer extends BukkitRunnable {
         action.run();
         decreaseTime();
 
-        if(remainingTimeInSeconds < 0) {
+        if(remainingTimeInSeconds <= 0) {
             endAction.run();
             cancel();
         }

@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
 
@@ -108,28 +109,39 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
             finishedItems.add(currentItem);
         }
 
-        Material item = Material.BARRIER;
+        Material item;
         switch (mode) {
             // If the current mode is ALL_SAME_ITEMS, we just pick each item by index.
             // Because of this we can be sure that everyone is getting the same items in the same order.
             case ALL_SAME_ITEMS: {
-                List<Material> items = itemsManager.getItems(level);
+                List<Material> possibleItems = new ArrayList<>(itemsManager.getItems(level));
                 int index = currentItem == null
                         // Start with the first item, if no item is selected before
                         ? 0
                         // Always increase by +1, so we get the next item
-                        : (items.indexOf(currentItem) + 1);
-                item = items.get(index);
+                        : (possibleItems.indexOf(currentItem) + 1);
+
+                if (index < possibleItems.size()) {
+                    item = possibleItems.get(index);
+                } else {
+                    player.sendMessage(Component.text("Wow! Du hast alle Items der Liste gefunden!", NamedTextColor.GOLD));
+                    item = Material.BEDROCK;
+                }
                 break;
             }
             // If the mode is DEFAULT, we want to pick random items
             default:
-                while(item == Material.BARRIER) {
-                    Material randomItem = itemsManager.getRandomItem(challenge.getItemDifficultyLevel());
-                    boolean materialAlreadyUsed = finishedItems.stream().anyMatch((usedMaterial) -> usedMaterial == randomItem);
-                    if(!materialAlreadyUsed) {
-                        item = randomItem;
-                    }
+                List<Material> possibleItems = new ArrayList<>(itemsManager.getItems(level));
+                // Remove all items that have already been finished
+                possibleItems.removeAll(finishedItems);
+
+                if (!possibleItems.isEmpty()) {
+                    item = possibleItems.get(ThreadLocalRandom.current().nextInt(possibleItems.size()));
+                } else {
+                    // No items left! Player finished everything available.
+                    // Handle this case (e.g. sending a message or setting a specific state)
+                    player.sendMessage(Component.text("Wow! Du hast alle Items gefunden!", NamedTextColor.GOLD));
+                    item = Material.BEDROCK; // Placeholder to stop finding items
                 }
                 break;
         }
@@ -175,12 +187,12 @@ public class ForceItemBattleChallengeParticipant extends ChallengeParticipant {
 
             if(bossBar == null) {
                 bossBar = BossBar.bossBar(itemName, 1.0f, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS);
-                player.showBossBar(bossBar);
             }
+
+            player.showBossBar(bossBar);
             bossBar.name(itemName);
         }
     }
-
 
     public List<Material> getFinishedItems() {
         return finishedItems;

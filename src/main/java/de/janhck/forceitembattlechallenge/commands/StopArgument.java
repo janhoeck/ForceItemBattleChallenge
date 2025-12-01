@@ -1,20 +1,23 @@
 package de.janhck.forceitembattlechallenge.commands;
 
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
+import de.janhck.forceitembattlechallenge.challenges.api.Challenge;
 import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
+import de.janhck.forceitembattlechallenge.utils.ValidationUtil;
 import org.bukkit.command.CommandSender;
+
+import java.util.Optional;
 
 public class StopArgument implements ICommandArgument {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
-        if(!challengeManager.isRunning()) {
-            sender.sendMessage(ChallengesPlugin.PREFIX + "Es wurde noch keine Challenge gestartet.");
+        Optional<Challenge<?>> challengeOpt = ValidationUtil.validateRunningChallenge(sender);
+        if (challengeOpt.isEmpty()) {
             return false;
         }
 
-        challengeManager.endCurrentChallenge();
+        ChallengesPlugin.getInstance().getChallengeManager().endCurrentChallenge();
         return true;
     }
 

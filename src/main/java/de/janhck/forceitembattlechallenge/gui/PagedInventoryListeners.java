@@ -4,6 +4,7 @@ import de.janhck.forceitembattlechallenge.gui.actions.ClickAction;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.Optional;
 
@@ -37,5 +38,16 @@ public class PagedInventoryListeners implements Listener {
 
         // Update the item at the slot, because an action can change the item metadata
         pagedInventory.getInventory().setItem(event.getSlot(), inventoryItem.getItemStack());
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if(!event.getInventory().equals(pagedInventory.getInventory())) {
+            return;
+        }
+
+        // We have to call closeInventory manually on inventory close (e.g. pressing ESC key) to prevent memory leaks.
+        // closeInventory removes unnecessary event listeners.
+        pagedInventory.closeInventory(event.getPlayer());
     }
 }

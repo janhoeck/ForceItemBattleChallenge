@@ -3,32 +3,34 @@ package de.janhck.forceitembattlechallenge.commands;
 import de.janhck.forceitembattlechallenge.ChallengesPlugin;
 import de.janhck.forceitembattlechallenge.challenges.api.Challenge;
 import de.janhck.forceitembattlechallenge.challenges.api.ChallengeParticipant;
-import de.janhck.forceitembattlechallenge.manager.ChallengeManager;
+import de.janhck.forceitembattlechallenge.utils.ValidationUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Optional;
 
 public class ReturnArgument implements ICommandArgument {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(!(sender instanceof Player player)) {
+        Optional<Player> playerOpt = ValidationUtil.validatePlayer(sender);
+        if (playerOpt.isEmpty()) {
+            return false;
+        }
+        Player player = playerOpt.get();
+
+        Optional<Challenge<?>> challengeOpt = ValidationUtil.validateRunningChallenge(sender);
+        if (challengeOpt.isEmpty()) {
             return false;
         }
 
-        ChallengeManager challengeManager = ChallengesPlugin.getInstance().getChallengeManager();
-        if(!challengeManager.isRunning()) {
-            sender.sendMessage(ChallengesPlugin.PREFIX + "Es wurde noch keine Challenge gestartet.");
+        Optional<ChallengeParticipant> participantOpt = ValidationUtil.validateParticipant(challengeOpt.get(), player);
+        if (participantOpt.isEmpty()) {
             return false;
         }
 
-        Challenge<?> challenge = challengeManager.getCurrentChallenge();
-        if(!challenge.isParticipant(player)) {
-            sender.sendMessage(ChallengesPlugin.PREFIX + "Du nimmst an der Challenge nicht teil.");
-            return false;
-        }
-
-        ChallengeParticipant participant = challenge.getChallengeParticipant(player).get();
+        ChallengeParticipant participant = participantOpt.get();
         Location lastDeathLocation = participant.getLastDeathLocation();
         if(lastDeathLocation == null) {
             sender.sendMessage(ChallengesPlugin.PREFIX + "Es scheint so als wärst du noch nicht gestorbem.");
